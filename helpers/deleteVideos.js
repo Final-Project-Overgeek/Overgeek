@@ -1,7 +1,7 @@
-const { Videos } = require('../models');
+const { Video } = require('../models');
 
 const deleteVideos = () => {
-  return Videos.destroy({ where: {} })
+  return Video.destroy({ where: {} })
 }
 
 module.exports = deleteVideos;

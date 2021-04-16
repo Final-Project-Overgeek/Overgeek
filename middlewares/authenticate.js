@@ -12,6 +12,7 @@ const authenticate = async function (req, res, next) {
         id: decoded.id
       }
     })
+
     if (!user) {
       throw {
         name: "customError",

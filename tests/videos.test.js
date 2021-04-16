@@ -1,33 +1,38 @@
 const request = require('supertest');
 const app = require('../app');
-const deleteVideos = require('../helpers/deleteVideos');
-const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJlbWFpbEBtYWlsLm
-              NvbSIsInVzZXJuYW1lIjoidXNlcm5hbWUiLCJwaG9uZV9udW1iZXIiOiIxMjM0NTY3OCIsInN1YnNjcmlwdGlvbl9k
-              YXRlIjpudWxsLCJpYXQiOjE2MTg1NzI0MjZ9._VyIcKo8T-vApmFqKp7R71Fc-5Osv5UQmfhkWeocPhg`
+const { User } = require('../models');
+const { generateToken } = require('../helpers/jwt');
+// const deleteVideos = require('../helpers/deleteVideos');
+let token = ''
 
-describe('testing /courses', () => {
-  beforeAll((done) => {
-    deleteVideos()
-    .then(() => done())
-    .catch(done)
+beforeAll((done) => {
+  User.findOne({ where: { role: 'admin' }})
+  .then((data) => {
+    // console.log(data.dataValues);
+    token = generateToken(data.dataValues)
+    // console.log(token);
   })
+  .catch(err => done(err))
+})
+describe('testing /courses', () => {
 
   /* ======================= CREATE COURSES ======================= */
 
   describe('success POST /courses', () => {
-    it('should return response with status', (done) => {
+    it('should return response with status 201', (done) => {
       const body = {
         title: 'hello world',
         url: 'https://google.co.id',
         thumbnail: 'acak',
         isFree: false
       }
+      // const acctoken = ['access_token']
       request(app)
         .post('/courses')
         .set('access_token', token)
         .send(body)
         .end((err, res) => {
-          if (err) done(err)
+          if (err) console.log(err)
           else {
             expect(res.statusCode).toEqual(201)
             expect(typeof res.body).toEqual('object');
