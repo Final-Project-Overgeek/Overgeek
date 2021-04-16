@@ -12,8 +12,9 @@ class UserController {
         phone_number: req.body.phone_number,
         premium: false,
         subscription_date: null,
-        role: 'customer'
+        role: req.body.role
       }
+      console.log(userData);
 
       const user = await User.create(userData)
 
@@ -21,7 +22,8 @@ class UserController {
         id: user.id,
         username: user.username,
         email: user.email,
-        phone_number: user.phone_number
+        phone_number: user.phone_number,
+        role: user.role
       })
     } catch (err) {
       next(err)
@@ -67,7 +69,8 @@ class UserController {
         email: user.email,
         username: user.username,
         phone_number: user.phone_number,
-        subscription_date: user.subscription_date
+        subscription_date: user.subscription_date,
+        role: user.role
       })
 
       res.status(200).json({

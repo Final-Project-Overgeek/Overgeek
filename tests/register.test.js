@@ -17,7 +17,8 @@ describe('testing /register', () => {
         username: 'email',
         email: 'email@mail.com',
         password: 'email',
-        phone_number: "12345678"
+        phone_number: "12345678",
+        role: 'admin'
       }
       request(app)
         .post('/register')
@@ -92,7 +93,7 @@ describe('testing /register', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            // expect(res.body).toHaveProperty("errorMsg", "Username Cant be empty!");
+            expect(res.body).toHaveProperty("errorMsg");
             done()
           }
         })
@@ -102,7 +103,8 @@ describe('testing /register', () => {
         username: 'username',
         email: 'email@mail.com',
         password: 'email123',
-        phone_number: "1234567899"
+        phone_number: "1234567899",
+        role: 'admin'
       }
       request(app)
         .post('/register')
@@ -112,7 +114,10 @@ describe('testing /register', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            // expect(res.body).toHaveProperty("errorMsg", "Email already exist!" );
+            expect(Array.isArray(res.body.errorMsg)).toEqual(true)
+            expect(res.body.errorMsg).toEqual(
+              expect.arrayContaining(["Email already exist!"])
+            )
             done()
           }
         })
