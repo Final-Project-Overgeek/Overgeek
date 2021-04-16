@@ -17,7 +17,6 @@ describe('testing /login', () => {
             expect(res.statusCode).toEqual(200);
             expect(typeof res.body).toEqual('object');
             expect(res.body.email).toEqual(body.username);
-            expect(res.body.password).toEqual(body.password);
             expect(res.body.token).not.toBeNull();
             done()
           }
@@ -39,7 +38,7 @@ describe('testing /login', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            expect(res.body).toHaveProperty("message", "please input email or password");
+            expect(res.body).toHaveProperty("message", "Invalid email or password");
             done()
           }
         })
@@ -57,7 +56,7 @@ describe('testing /login', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            expect(res.body).toHaveProperty("message", "invalid ");
+            expect(res.body).toHaveProperty("message", "Invalid email or password");
             done()
           }
         })
@@ -75,7 +74,7 @@ describe('testing /login', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            expect(res.body).toHaveProperty("message", "please input email or password");
+            expect(res.body).toHaveProperty("message", "Invalid email or password");
             done()
           }
         })
@@ -93,7 +92,7 @@ describe('testing /login', () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual('object');
-            expect(res.body).toHaveProperty("message", "check email or password");
+            expect(res.body).toHaveProperty("message", "Invalid email or password");
             done()
           }
         })
