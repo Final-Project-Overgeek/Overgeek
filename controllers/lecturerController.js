@@ -172,6 +172,51 @@ class LecturerController {
       next(err)
     }
   }
+
+  static readLecturerByGame = async (req, res , next) => {
+    try {
+      const data = await Lecturer.findAll({
+        where: {
+          game: req.query.game
+        },
+        include: [{
+          model: Rating
+        },
+        {
+          model: Video
+        }]
+      })
+      let output = []
+
+      for (let i = 0; i < data.length; i++) {
+        let lecturerRating = 0
+        for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
+          lecturerRating += data[i].dataValues.Ratings[j].rating
+        }
+        if (lecturerRating === 0) {
+          lecturerRating = 5
+        } else {
+          lecturerRating /= data[i].dataValues.Ratings.length
+        }
+        output.push({
+          id: data[i].id,
+          name: data[i].name,
+          profile: data[i].profile,
+          game: data[i].game,
+          role: data[i].role,
+          team: data[i].team,
+          language: data[i].language,
+          image: data[i].image,
+          rating: lecturerRating,
+          videos: data[i].dataValues.Videos
+        })
+      }
+
+      res.status(200).json(output)
+    } catch (err) {
+      next(err)
+    }
+  }
 }
 
 module.exports = LecturerController
