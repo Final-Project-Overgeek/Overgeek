@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@mail.com",
+    "password": "admin",
+    "premium": true,
+    "phone_number": 123567890,
+    "subscription_date": null,
+    "role": "admin"
+  }
+]
