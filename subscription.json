@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "monthly",
+    "image": "https://img.freepik.com/free-photo/number-30_2227-918.jpg?size=626&ext=jpg",
+    "price": 50000,
+    "days": 30
+  },
+  {
+    "id": 2,
+    "name": "season",
+    "image": "https://img2.pngio.com/6-month-warranty-6-months-warranty-png-png-image-transparent-6-months-png-820_457.png",
+    "price": 250000,
+    "days": 180
+  },
+  {
+    "id": 3,
+    "name": "annual",
+    "image": "https://www.pngitem.com/pimgs/m/93-938358_transparent-anniversary-png-1-year-anniversary-png-png.png",
+    "price": 400000,
+    "days": 360
+  }
+]
