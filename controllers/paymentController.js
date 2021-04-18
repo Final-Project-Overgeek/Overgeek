@@ -19,7 +19,7 @@ class PaymentController {
         },
         data: {
           transaction_details: {
-            order_id: 'asdasdsadasdsadsad1wd',
+            order_id: 'asdas123sass2323s3dsffgg',
             gross_amount: req.body.amount
           },
           credit_card: {
@@ -32,6 +32,7 @@ class PaymentController {
       }
     })
     .then(data => {
+      console.log('>>>>>>>>>>', data.data)
       res.status(201).json(data.data)
     })
     .catch(err => {
@@ -55,6 +56,31 @@ class PaymentController {
     .catch(err => {
       console.log(err)
       res.status(500).json(err)
+    })
+  }
+
+  static test(req, res, next){
+    console.log(req.params.game)
+  }
+
+  static check(req, res, next){
+    axios({
+      url: 'https://api.sandbox.midtrans.com/v2/asdas123sass2323s3dsffgg/status',
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization:
+        "Basic " +
+              Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
+            // Above is API server key for the Midtrans account, encoded to base64
+        },
+    })
+    .then(data => {
+      res.status(200).json(data.data)
+    })
+    .catch(err => {
+      console.log(err)
     })
   }
 }
