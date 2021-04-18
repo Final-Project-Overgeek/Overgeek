@@ -7,7 +7,7 @@ const authorize = async (req, res, next) => {
         id: req.decoded.id
       }
     })
-    
+
     if (!data) {
       throw {
         name: "customError",

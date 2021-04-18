@@ -1,4 +1,5 @@
 const { Video }  = require('../models/')
+const fs = require('fs');
 
 class VideoController {
   static readAllVideos = async (req, res, next) => {
@@ -27,7 +28,10 @@ class VideoController {
 
   static addVideo = async (req, res, next) => {
     try {
-      const { title, url, thumbnail, isFree } = req.body
+      const videos = fs.readFileSync('./key.csv', 'utf-8');
+      const url = `data/${videos}`;
+
+      const { title, thumbnail, isFree } = req.body
       const data = await Video.create({
         title,
         url,
@@ -76,7 +80,11 @@ class VideoController {
 
   static editVideo = async (req, res, next) => {
     try {
+      const videos = fs.readFileSync('./key.csv', 'utf-8');
+      const url = `data/${videos}`;
+      
       const findData = await Video.findByPk(+req.params.id)
+
       if (!findData) {
         throw {
           name: "customError",
@@ -85,7 +93,7 @@ class VideoController {
         }
       }
 
-      const { title, url, thumbnail, isFree } = req.body
+      const { title, thumbnail, isFree } = req.body
       const videoData = { title, url, thumbnail, isFree }
 
       const data = await Video.update(videoData, {
