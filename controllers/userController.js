@@ -46,13 +46,24 @@ class UserController {
           },
         });
       }
-      
+
       if (!user) {
         throw {
           name: "customError",
           msg: `Invalid email or password`,
           status: 400,
         };
+      }
+
+      if (!user.subscription_date < new Date()) {
+        const checkUser = await User.update({
+        ...user,
+        premium: false,
+        }, {
+          where: {
+            id: req.decoded.id
+          }
+        })
       }
 
       const comparedPassword = comparePassword(password, user.password);
