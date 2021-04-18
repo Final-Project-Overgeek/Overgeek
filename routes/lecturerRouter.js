@@ -4,7 +4,7 @@ const LecturerController = require('../controllers/lecturerController')
 const authenticate = require('../middlewares/authenticate')
 const authorize = require('../middlewares/authorize')
 
-router.get('/', LecturerController.readLecturerByGame)
+router.get('/game', LecturerController.readLecturerByGame)
 router.get('/', LecturerController.readAllLecturer)
 router.get('/:id', LecturerController.readLecturerById)
 

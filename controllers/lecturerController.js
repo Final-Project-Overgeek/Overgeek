@@ -1,4 +1,5 @@
 const { Lecturer, Rating, Video } = require('../models/')
+const fs = require('fs');
 
 class LecturerController {
   static readAllLecturer = async (req, res, next) => {
@@ -96,7 +97,10 @@ class LecturerController {
 
   static addLecturer = async (req, res, next) => {
     try {
-      const { name, profile, game, role, team, language, image} = req.body
+      const dataFile = fs.readFileSync('./key.csv', 'utf-8');
+      const image = `data/${dataFile}`;
+
+      const { name, profile, game, role, team, language } = req.body
       const lecturerData = { name, profile, game, role, team, language, image}
 
       const data = await Lecturer.create(lecturerData)
@@ -109,6 +113,9 @@ class LecturerController {
 
   static editLecturer = async (req, res, next) => {
     try {
+      const dataFile = fs.readFileSync('./key.csv', 'utf-8');
+      const image = `data/${dataFile}`;
+
       const findData = await Lecturer.findByPk(+req.params.id)
       if (!findData) {
         throw {
@@ -118,7 +125,7 @@ class LecturerController {
         }
       }
 
-      const { name, profile, game, role, team, language, image} = req.body
+      const { name, profile, game, role, team, language } = req.body
       const lecturerData = { name, profile, game, role, team, language, image}
 
       const data = await Lecturer.update(lecturerData, {
