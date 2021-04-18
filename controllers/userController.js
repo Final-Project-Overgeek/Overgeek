@@ -1,6 +1,6 @@
-const { User } = require('../models')
-const { comparePassword } = require('../helpers/bcrypt')
-const { generateToken } = require('../helpers/jwt')
+const { User } = require("../models");
+const { comparePassword } = require("../helpers/bcrypt");
+const { generateToken } = require("../helpers/jwt");
 
 class UserController {
   static register = async (req, res, next) => {
@@ -12,56 +12,55 @@ class UserController {
         phone_number: req.body.phone_number,
         premium: false,
         subscription_date: null,
-        role: req.body.role
-      }
-      console.log(userData);
+        role: "customer",
+      };
 
-      const user = await User.create(userData)
+      const user = await User.create(userData);
 
       res.status(201).json({
         id: user.id,
         username: user.username,
         email: user.email,
         phone_number: user.phone_number,
-        role: user.role
-      })
+        role: user.role,
+      });
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static login = async (req, res, next) => {
     try {
-      const { email, password } = req.body
+      const { email, password } = req.body;
       let user = await User.findOne({
         where: {
-          email
-        }
-      })
+          email,
+        },
+      });
 
       if (!user) {
         user = await User.findOne({
           where: {
-            username: email
-          }
-        })
+            username: email,
+          },
+        });
       }
-      
+
       if (!user) {
         throw {
           name: "customError",
           msg: `Invalid email or password`,
-          status: 400
-        }
+          status: 400,
+        };
       }
 
-      const comparedPassword = comparePassword(password, user.password)
+      const comparedPassword = comparePassword(password, user.password);
       if (!comparedPassword) {
         throw {
           name: "customError",
           msg: `Invalid email or password`,
-          status: 400
-        }
+          status: 400,
+        };
       }
 
       const access_token = generateToken({
@@ -70,48 +69,48 @@ class UserController {
         username: user.username,
         phone_number: user.phone_number,
         subscription_date: user.subscription_date,
-        role: user.role
-      })
+        role: user.role,
+      });
 
       res.status(200).json({
-        access_token
-      })
+        access_token,
+      });
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static editUser = async (req, res, next) => {
     try {
       const userData = await User.findOne({
         where: {
-          id: req.decoded.id
-        }
-      })
+          id: req.decoded.id,
+        },
+      });
       const data = {
         ...userData,
         password: req.body.password,
-      }
+      };
 
       const editedData = await User.update(data, {
         where: {
-          id: req.decoded.id
+          id: req.decoded.id,
         },
-        returning: true
-      })
-      res.status(200).json(editedData)
+        returning: true,
+      });
+      res.status(200).json(editedData);
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static readUser = async (req, res, next) => {
     try {
       const user = await User.findOne({
         where: {
-          id: req.decoded.id
-        }
-      })
+          id: req.decoded.id,
+        },
+      });
 
       const data = {
         id: user.id,
@@ -119,14 +118,14 @@ class UserController {
         email: user.email,
         premium: user.premium,
         phone_number: user.phone_number,
-        subscription_date: user.subscription_date
-      }
+        subscription_date: user.subscription_date,
+      };
 
-      res.status(200).json(data)
+      res.status(200).json(data);
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }
 
-module.exports = UserController
+module.exports = UserController;
