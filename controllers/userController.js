@@ -55,7 +55,7 @@ class UserController {
         };
       }
 
-      if (!user.subscription_date < new Date()) {
+      if (user.subscription_date < new Date()) {
         const checkUser = await User.update({
         ...user,
         premium: false,
