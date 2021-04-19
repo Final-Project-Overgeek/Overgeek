@@ -11,7 +11,7 @@
     "db:seed:all:development": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all",
     "db:migrate:development": "cross-env NODE_ENV=development npx sequelize-cli db:migrate",
     "db:migrate:undo:development": "cross-env NODE_ENV=development npx sequelize-cli db:migrate:undo",
-    "test": "cross-env NODE_ENV=test npx jest --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_ENV=test npx jest --detectOpenHandles --forceExit --coverage",
     "dev": "cross-env NODE_ENV=development npx nodemon bin/http.js"
   },
   "repository": {

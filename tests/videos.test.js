@@ -10,7 +10,7 @@ beforeAll((done) => {
   .then((data) => {
     // console.log(data.dataValues);
     token = generateToken(data.dataValues)
-    // console.log(token);
+    done()
   })
   .catch(err => done(err))
 })

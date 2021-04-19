@@ -13,7 +13,7 @@ class UserController {
         phone_number: req.body.phone_number,
         premium: false,
         subscription_date: null,
-        role: "customer",
+        role: "admin",
       };
 
       const user = await User.create(userData);
