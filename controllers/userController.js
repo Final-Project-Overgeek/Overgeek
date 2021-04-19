@@ -61,7 +61,7 @@ class UserController {
         premium: false,
         }, {
           where: {
-            id: req.decoded.id
+            id: user.id
           }
         })
       }
