@@ -55,13 +55,13 @@ class UserController {
         };
       }
 
-      if (!user.subscription_date < new Date()) {
+      if (user.subscription_date < new Date()) {
         const checkUser = await User.update({
         ...user,
         premium: false,
         }, {
           where: {
-            id: req.decoded.id
+            id: user.id
           }
         })
       }
@@ -92,7 +92,7 @@ class UserController {
     }
   };
 
-  static editUser = async (req, res, next) => {
+  static editUser = async (req, res, next) => { //minta name dari subscription type
     try {
       const userData = await User.findOne({
         where: {
@@ -102,13 +102,14 @@ class UserController {
       let subsType
       const subscriptionDatas = await Subscription.findAll()
       for (let i = 0; i < subscriptionDatas.length; i++) {
-        if (subscriptionDatas[i].name === req.body.name) {
-          subsType = subscriptionDatas[i].name
+        // Number(req.body.gross_amount.split('.')[0])
+        if (subscriptionDatas[i].price === req.body.gross_amount) {
+          subsType = subscriptionDatas[i].price
         }
       }
       await Subscription.findOne({
         where: {
-          name: subsType
+          name: price
         }
       })
 

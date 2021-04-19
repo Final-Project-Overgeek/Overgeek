@@ -19,7 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.BOOLEAN,
     subsription_type: DataTypes.STRING,
     transaction_time: DataTypes.DATE,
-    UserId: DataTypes.INTEGER
+    UserId: DataTypes.INTEGER,
+    amount: DataTypes.INTEGER,
+    token: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Payment',
