@@ -1,4 +1,5 @@
-const { Subscription } = require('../models/')
+const { Subscription } = require('../models/');
+const redis = require('ioredis');
 
 class SubsciptionController {
   static addSubscription = async (req, res, next) => {
@@ -8,7 +9,8 @@ class SubsciptionController {
 
       const data = await Subscription.create(subscriptionData)
 
-      res.status(201).json(data)
+      res.status(201).json(data);
+      await redis.del('subscriptions')
     } catch (err) {
       next(err)
     }
