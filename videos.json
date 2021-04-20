@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Ban & Picks Guide",
+    "url": "/upload/data/e3355f2b46ba90f13779db58fa8d5120",
+    "thumbnail": "https://imgur.com/a/Wjpk2BU",
+    "isFree": false,
+    "LecturerId": 3
+  },
+  {
+    "id": 2,
+    "title": "Knowing Your Role",
+    "url": "/upload/data/05bde798a27c0951cf535e2e55ee2bbf",
+    "thumbnail": "https://imgur.com/a/0CWNUuH",
+    "isFree": true,
+    "LecturerId": 3
+  }
+]

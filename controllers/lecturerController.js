@@ -14,11 +14,10 @@ class LecturerController {
         attributes: ['id', 'name', 'profile', 'game', 'role', 'team', 'language', 'image']
       })
       let output = []
-      // console.log('========= BEFORE 1');
       for (let i = 0; i < data.length; i++) {
+        let freeVideos = []
         let lecturerRating = 0
-        // console.log('========== BEFORE 2');
-        console.log(data[i]);
+
         for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
           lecturerRating += data[i].dataValues.Ratings[j].rating
         }
@@ -27,7 +26,19 @@ class LecturerController {
         } else {
           lecturerRating /= data[i].dataValues.Ratings.length
         }
-        // console.log('======= BEFORE 3');
+        for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
+          if (data[i].dataValues.Videos[k].isFree) {
+            freeVideos.push(data[i].dataValues.Videos[k])
+          } else {
+            freeVideos.push({
+              title: data[i].dataValues.Videos[k].title,
+              url: 'VIDEO BERBAYAR',
+              thumbnail: data[i].dataValues.Videos[k].thumbnail,
+              isFree: data[i].dataValues.Videos[k].isFree,
+              LecturerId: data[i].dataValues.Videos[k].LecturerId
+            })
+          }
+        }
         output.push({
           id: data[i].id,
           name: data[i].name,
@@ -38,7 +49,7 @@ class LecturerController {
           language: data[i].language,
           image: data[i].image,
           rating: lecturerRating,
-          videos: data[i].dataValues.Videos
+          videos: freeVideos
         })
       }
 
@@ -71,6 +82,7 @@ class LecturerController {
       }
       let output = []
       let lecturerRating = 0
+      let freeVideos = []
       for (let i = 0; i < data.dataValues.Ratings.length; i++) {
         lecturerRating += data.dataValues.Ratings[i].rating
       }
@@ -79,6 +91,19 @@ class LecturerController {
         lecturerRating = 5
       } else {
         lecturerRating /= data.dataValues.Ratings.length
+      }
+      for (let k = 0; k < data.dataValues.Videos.length; k++) {
+        if (data.dataValues.Videos[k].isFree) {
+          freeVideos.push(data.dataValues.Videos[k])
+        } else {
+          freeVideos.push({
+            title: data.dataValues.Videos[k].title,
+            url: 'VIDEO BERBAYAR',
+            thumbnail: data.dataValues.Videos[k].thumbnail,
+            isFree: data.dataValues.Videos[k].isFree,
+            LecturerId: data.dataValues.Videos[k].LecturerId
+          })
+        }
       }
       output.push({
         id: data.id,
@@ -90,7 +115,7 @@ class LecturerController {
         language: data.language,
         image: data.image,
         rating: lecturerRating,
-        videos: data.dataValues.Videos
+        videos: freeVideos
       })
 
       res.status(200).json(output)
@@ -192,9 +217,10 @@ class LecturerController {
         }]
       })
       let output = []
-
       for (let i = 0; i < data.length; i++) {
+        let freeVideos = []
         let lecturerRating = 0
+
         for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
           lecturerRating += data[i].dataValues.Ratings[j].rating
         }
@@ -202,6 +228,19 @@ class LecturerController {
           lecturerRating = 5
         } else {
           lecturerRating /= data[i].dataValues.Ratings.length
+        }
+        for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
+          if (data[i].dataValues.Videos[k].isFree) {
+            freeVideos.push(data[i].dataValues.Videos[k])
+          } else {
+            freeVideos.push({
+              title: data[i].dataValues.Videos[k].title,
+              url: 'VIDEO BERBAYAR',
+              thumbnail: data[i].dataValues.Videos[k].thumbnail,
+              isFree: data[i].dataValues.Videos[k].isFree,
+              LecturerId: data[i].dataValues.Videos[k].LecturerId
+            })
+          }
         }
         output.push({
           id: data[i].id,
@@ -213,7 +252,7 @@ class LecturerController {
           language: data[i].language,
           image: data[i].image,
           rating: lecturerRating,
-          videos: data[i].dataValues.Videos
+          videos: freeVideos
         })
       }
 

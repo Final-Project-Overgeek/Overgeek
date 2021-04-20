@@ -9,7 +9,6 @@
     "db:migrate:test": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",
     "db:migrate:undo:test": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all:test",
     "db:seed:all:test": "cross-env NODE_ENV=test npx sequelize-cli db:seed:all",
-
     "db:create:development": "cross-env NODE_ENV=development npx sequelize-cli db:create",
     "db:drop:development": "cross-env NODE_ENV=development npx sequelize-cli db:drop",
     "db:migrate:development": "cross-env NODE_ENV=development npx sequelize-cli db:migrate",
