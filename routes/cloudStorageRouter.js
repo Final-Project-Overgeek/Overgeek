@@ -1,4 +1,4 @@
-const router = require('express').Router();;
+const router = require('express').Router();
 const { upload, uploadFile, getFileStream, unlinkFile } = require('../cloudStorage/index');
 const fs = require('fs');
 
@@ -9,7 +9,7 @@ router.get('/data/:key', (req, res) => {
   readStram.pipe(res)
 })
 
-router.post('/uploadVideos', upload.single('video'), async (req, res) => {
+router.post('upload/uploadVideos', upload.single('video'), async (req, res) => {
   const file = req.file;
   // console.log(file);
 
@@ -22,7 +22,7 @@ router.post('/uploadVideos', upload.single('video'), async (req, res) => {
   res.status(201).json({awsVideo: `/upload/data/${result.Key}`})
 })
 
-router.post('/uploadImages', upload.single('video'), async (req, res) => {
+router.post('upload/uploadImages', upload.single('video'), async (req, res) => {
   const file = req.file;
   // console.log(file);
 
