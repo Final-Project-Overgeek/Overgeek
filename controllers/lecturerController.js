@@ -14,8 +14,11 @@ class LecturerController {
         attributes: ['id', 'name', 'profile', 'game', 'role', 'team', 'language', 'image']
       })
       let output = []
+      // console.log('========= BEFORE 1');
       for (let i = 0; i < data.length; i++) {
         let lecturerRating = 0
+        // console.log('========== BEFORE 2');
+        console.log(data[i]);
         for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
           lecturerRating += data[i].dataValues.Ratings[j].rating
         }
@@ -24,6 +27,7 @@ class LecturerController {
         } else {
           lecturerRating /= data[i].dataValues.Ratings.length
         }
+        // console.log('======= BEFORE 3');
         output.push({
           id: data[i].id,
           name: data[i].name,
@@ -137,13 +141,7 @@ class LecturerController {
 
       if (data[0] !== 0) {
         res.status(200).json(data)
-      } else {
-        throw {
-          name: "customError",
-          msg: `404 not found`,
-          status: 404
-        }
-      }
+      } 
     } catch (err) {
       next(err)
     }
@@ -169,11 +167,11 @@ class LecturerController {
       if (data[0] !== 0) {
         res.status(200).json({msg: "Delete Lecturer Completed!"})
       } else {
-        throw {
-          name: "customError",
-          msg: "`Invalid ID",
-          status: 404
-        }
+        // throw {
+        //   name: "customError",
+        //   msg: "`Invalid ID",
+        //   status: 404
+        // }
       }
     } catch (err) {
       next(err)

@@ -19,6 +19,7 @@ module.exports = {
     dialect
   },
   "test": {
+    logging: false,
     username,
     password,
     database,
