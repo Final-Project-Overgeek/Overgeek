@@ -19,7 +19,7 @@ router.post('/uploadVideos', upload.single('video'), async (req, res) => {
   console.log(result);
   fs.writeFileSync('./key.csv', result.Key)
 
-  res.send(`/data/${result.Key}`)
+  res.status(201).json({awsVideo: `/upload/data/${result.Key}`})
 })
 
 router.post('/uploadImages', upload.single('video'), async (req, res) => {
@@ -32,7 +32,7 @@ router.post('/uploadImages', upload.single('video'), async (req, res) => {
   console.log(result);
   fs.writeFileSync('./key.csv', result.key)
 
-  res.send(`/data/${result.key}`)
+  res.status(201).json({awsImage: `/upload/data/${result.Key}`})
 })
 
 module.exports = router;

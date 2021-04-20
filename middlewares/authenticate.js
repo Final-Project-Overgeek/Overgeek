@@ -22,7 +22,6 @@ const authenticate = async function (req, res, next) {
     }
 
     req.decoded = decoded
-
     next()
   } catch (err) {
     next(err)
