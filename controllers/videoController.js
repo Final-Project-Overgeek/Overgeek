@@ -28,10 +28,7 @@ class VideoController {
 
   static addVideo = async (req, res, next) => {
     try {
-      const videos = fs.readFileSync('./key.csv', 'utf-8');
-      const url = `data/${videos}`;
-
-      const { title, thumbnail, isFree } = req.body
+      const { title, thumbnail, isFree, url } = req.body
       const data = await Video.create({
         title,
         url,
@@ -80,9 +77,6 @@ class VideoController {
 
   static editVideo = async (req, res, next) => {
     try {
-      const videos = fs.readFileSync('./key.csv', 'utf-8');
-      const url = `data/${videos}`;
-
       const findData = await Video.findByPk(+req.params.id)
       if (!findData) {
         throw {
@@ -92,7 +86,7 @@ class VideoController {
         }
       }
 
-      const { title, thumbnail, isFree } = req.body
+      const { title, thumbnail, isFree, url } = req.body
       const videoData = { title, url, thumbnail, isFree }
 
       const data = await Video.update(videoData, {

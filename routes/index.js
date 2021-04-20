@@ -10,7 +10,7 @@ const cloudStorageRouter = require('./cloudStorageRouter')
 
 router.use('/payments', paymentRouter)
 router.use('/lecturers', lecturerRouter)
-router.use('/', cloudStorageRouter)
+router.use('/upload', cloudStorageRouter)
 router.use('/courses', videoRouter)
 router.use('/ratings', ratingRouter)
 router.use('/subscriptions', subscriptionRouter)
