@@ -38,6 +38,7 @@ class UserController {
       await redis.del("users");
       await redis.del("lecturersGame")
       await redis.del("lecturers")
+      await redis.del("userRedis")
       const { email, password } = req.body;
       let user = await User.findOne({
         where: {
@@ -92,7 +93,7 @@ class UserController {
         subscription_date: user.subscription_date,
         role: user.role,
       });
-
+      await redis.set('userRedis', JSON.stringify(user))
       res.status(200).json({access_token});
     } catch (err) {
       next(err);

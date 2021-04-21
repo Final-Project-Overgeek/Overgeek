@@ -1,4 +1,4 @@
-const { Lecturer, Rating, Video } = require("../models/");
+const { Lecturer, Rating, Video, User } = require("../models/");
 const fs = require("fs");
 const redis = require("../redis/index");
 
@@ -9,6 +9,13 @@ class LecturerController {
       if (lecturersData) {
         res.status(200).json(JSON.parse(lecturersData));
       } else {
+      const userRed = await redis.get('userRedis')
+      const parsedUser = JSON.parse(userRed)
+      const user = await User.findOne({
+        where: {
+          id: parsedUser.id
+        }
+      })
         const data = await Lecturer.findAll({
           include: [
             {
@@ -45,6 +52,8 @@ class LecturerController {
           }
           for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
             if (data[i].dataValues.Videos[k].isFree) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else if (!data[i].dataValues.Videos[k].isFree && user.premium) {
               freeVideos.push(data[i].dataValues.Videos[k])
             } else {
               freeVideos.push({
@@ -89,6 +98,13 @@ class LecturerController {
           }
         });
       } else {
+        const userRed = await redis.get('userRedis')
+        const parsedUser = JSON.parse(userRed)
+        const user = await User.findOne({
+          where: {
+            id: parsedUser.id
+          }
+        })
         const data = await Lecturer.findOne({
           where: {
             id: +req.params.id,
@@ -133,8 +149,11 @@ class LecturerController {
           } else {
             lecturerRating /= data.dataValues.Ratings.length
           }
+          console.log(user.premium)
           for (let k = 0; k < data.dataValues.Videos.length; k++) {
             if (data.dataValues.Videos[k].isFree) {
+              freeVideos.push(data.dataValues.Videos[k])
+            } else if (!data.dataValues.Videos[k].isFree && user.premium) {
               freeVideos.push(data.dataValues.Videos[k])
             } else {
               freeVideos.push({
@@ -158,7 +177,7 @@ class LecturerController {
             rating: lecturerRating,
             videos: freeVideos
           })
-          await redis.set('lecture', JSON.stringify(output))
+          await redis.set('lecturer', JSON.stringify(output))
           res.status(200).json(output)   
       }
     } catch (err) {
@@ -262,6 +281,13 @@ class LecturerController {
       if (lectureByGame && req.query.game === parsedData[0].game) {
           res.status(200).json(JSON.parse(lectureByGame));
       } else {
+        const userRed = await redis.get('userRedis')
+        const parsedUser = JSON.parse(userRed)
+        const user = await User.findOne({
+          where: {
+            id: parsedUser.id
+          }
+        })
         const data = await Lecturer.findAll({
           where: {
             game: req.query.game,
@@ -275,7 +301,6 @@ class LecturerController {
             },
           ],
         });
-
         for (let i = 0; i < data.length; i++) {
           let lecturerRating = 0;
           let freeVideos = []
@@ -289,6 +314,8 @@ class LecturerController {
           }
           for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
             if (data[i].dataValues.Videos[k].isFree) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else if (!data[i].dataValues.Videos[k].isFree && user.premium) {
               freeVideos.push(data[i].dataValues.Videos[k])
             } else {
               freeVideos.push({
