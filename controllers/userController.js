@@ -16,7 +16,7 @@ class UserController {
         phone_number: req.body.phone_number,
         premium: false,
         subscription_date: null,
-        role: "admin",
+        role: "customer",
       };
 
       const user = await User.create(userData);
@@ -70,6 +70,7 @@ class UserController {
             },
           }
         );
+        await redis.del("users");
       }
 
       const comparedPassword = comparePassword(password, user.password);

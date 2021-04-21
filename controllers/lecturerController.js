@@ -258,14 +258,9 @@ class LecturerController {
     try {
       let output = [];
       const lectureByGame = await redis.get("lecturersGame");
-      if (lectureByGame !== null) {
-        const parsedData = JSON.parse(lectureByGame);
-        if (req.query.game === parsedData[0].game) {
+      const parsedData = JSON.parse(lectureByGame);
+      if (lectureByGame && req.query.game === parsedData[0].game) {
           res.status(200).json(JSON.parse(lectureByGame));
-        } else {
-          res.status(200).json(output);
-          await redis.del("lecturersGame");
-        }
       } else {
         const data = await Lecturer.findAll({
           where: {
@@ -283,6 +278,7 @@ class LecturerController {
 
         for (let i = 0; i < data.length; i++) {
           let lecturerRating = 0;
+          let freeVideos = []
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
             lecturerRating += data[i].dataValues.Ratings[j].rating;
           }

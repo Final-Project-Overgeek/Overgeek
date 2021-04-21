@@ -22,10 +22,11 @@ class VideoController {
   static readOneVideo = async (req, res, next) => {
     try {
       const readOneVideo = await redis.get('video');
+      const parsedVideo = JSON.parse(readOneVideo)
       if (readOneVideo) {
-        readOneVideo.forEach(e => {
+        parsedVideo.forEach(e => {
           if (e.id === +req.params.id) {
-            res.status(200).JSON.parse(readOneVideo)
+            res.status(200).json(JSON.parse(readOneVideo))
           }
         });
       } else {
