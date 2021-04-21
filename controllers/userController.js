@@ -14,8 +14,8 @@ class UserController {
         email: req.body.email,
         password: req.body.password,
         phone_number: req.body.phone_number,
-        premium: false,
-        subscription_date: null,
+        premium: true,
+        subscription_date: countDate('annual'),
         role: "customer",
       };
 
@@ -35,6 +35,7 @@ class UserController {
 
   static login = async (req, res, next) => {
     try {
+      await redis.del("users");
       const { email, password } = req.body;
       let user = await User.findOne({
         where: {
@@ -70,7 +71,6 @@ class UserController {
             },
           }
         );
-        await redis.del("users");
       }
 
       const comparedPassword = comparePassword(password, user.password);
@@ -91,9 +91,7 @@ class UserController {
         role: user.role,
       });
 
-      res.status(200).json({
-        access_token,
-      });
+      res.status(200).json(user);
     } catch (err) {
       next(err);
     }
@@ -146,7 +144,8 @@ class UserController {
   static readUser = async (req, res, next) => {
     try {
       const usersData = await redis.get("users");
-      if (usersData) {
+      const parsedUser = JSON.parse(usersData)
+      if (usersData && parsedUser.id === req.decoded.id) {
         res.status(200).json(JSON.parse(usersData));
       } else {
         const user = await User.findOne({
@@ -164,8 +163,8 @@ class UserController {
           subscription_date: user.subscription_date,
         };
 
-        res.status(200).json(data);
         await redis.set("users", JSON.stringify(data));
+        res.status(200).json(data);
       }
     } catch (err) {
       next(err);
