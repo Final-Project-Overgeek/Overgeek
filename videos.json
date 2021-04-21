@@ -2,16 +2,16 @@
   {
     "id": 1,
     "title": "Ban & Picks Guide",
-    "url": "/upload/data/e3355f2b46ba90f13779db58fa8d5120",
-    "thumbnail": "https://imgur.com/a/Wjpk2BU",
+    "url": "https://drive.google.com/file/d/1bYAEzTIgFvBCPqL0nHSkmBhrWjL7Ybiq/preview",
+    "thumbnail": "https://cdn.discordapp.com/attachments/832204439967236108/833892058519437312/unknown.png",
     "isFree": false,
     "LecturerId": 3
   },
   {
     "id": 2,
     "title": "Knowing Your Role",
-    "url": "/upload/data/05bde798a27c0951cf535e2e55ee2bbf",
-    "thumbnail": "https://imgur.com/a/0CWNUuH",
+    "url": "https://drive.google.com/file/d/1WDRymTBxrpQqa06G0ez_eR6w2yIAwOy9/preview",
+    "thumbnail": "https://cdn.discordapp.com/attachments/832204439967236108/833888102200115241/unknown.png",
     "isFree": true,
     "LecturerId": 3
   }
