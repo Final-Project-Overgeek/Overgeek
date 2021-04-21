@@ -36,6 +36,8 @@ class UserController {
   static login = async (req, res, next) => {
     try {
       await redis.del("users");
+      await redis.del("lecturersGame")
+      await redis.del("lecturers")
       const { email, password } = req.body;
       let user = await User.findOne({
         where: {
