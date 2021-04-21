@@ -1,11 +1,14 @@
 const { User, Subscription } = require("../models");
-const countDate = require('../helpers/countDate')
+const countDate = require("../helpers/countDate");
 const { comparePassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
+const redis = require("../redis/index");
 
 class UserController {
   static register = async (req, res, next) => {
     try {
+      await redis.del("users");
+
       const userData = {
         username: req.body.username,
         email: req.body.email,
@@ -56,14 +59,17 @@ class UserController {
       }
 
       if (user.subscription_date < new Date()) {
-        const checkUser = await User.update({
-        ...user,
-        premium: false,
-        }, {
-          where: {
-            id: user.id
+        const checkUser = await User.update(
+          {
+            ...user,
+            premium: false,
+          },
+          {
+            where: {
+              id: user.id,
+            },
           }
-        })
+        );
       }
 
       const comparedPassword = comparePassword(password, user.password);
@@ -92,33 +98,36 @@ class UserController {
     }
   };
 
-  static editUser = async (req, res, next) => { //minta name dari subscription type
+  static editUser = async (req, res, next) => {
+    //minta name dari subscription type
     try {
+      await redis.del("users");
+
       const userData = await User.findOne({
         where: {
           id: req.decoded.id,
         },
       });
-      let subsType
-      const subscriptionDatas = await Subscription.findAll()
+      let subsType;
+      const subscriptionDatas = await Subscription.findAll();
       for (let i = 0; i < subscriptionDatas.length; i++) {
         // Number(req.body.gross_amount.split('.')[0])
         if (subscriptionDatas[i].price === req.body.gross_amount) {
-          subsType = subscriptionDatas[i].price
+          subsType = subscriptionDatas[i].price;
         }
       }
       await Subscription.findOne({
         where: {
-          name: price
-        }
-      })
+          name: price,
+        },
+      });
 
-      const expiredDate = countDate(subsType)
-      
+      const expiredDate = countDate(subsType);
+
       const data = {
         ...userData,
         premium: true,
-        subscription_date: expiredDate
+        subscription_date: expiredDate,
       };
 
       const editedData = await User.update(data, {
@@ -135,34 +144,39 @@ class UserController {
 
   static readUser = async (req, res, next) => {
     try {
-      const user = await User.findOne({
-        where: {
-          id: req.decoded.id,
-        },
-      });
+      const usersData = await redis.get("users");
+      if (usersData) {
+        res.status(200).json(JSON.parse(usersData));
+      } else {
+        const user = await User.findOne({
+          where: {
+            id: req.decoded.id,
+          },
+        });
 
-      const data = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        premium: user.premium,
-        phone_number: user.phone_number,
-        subscription_date: user.subscription_date,
-      };
+        const data = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          premium: user.premium,
+          phone_number: user.phone_number,
+          subscription_date: user.subscription_date,
+        };
 
-      res.status(200).json(data);
+        res.status(200).json(data);
+        await redis.set("users", JSON.stringify(data));
+      }
     } catch (err) {
       next(err);
     }
-  }
+  };
 
   static editPremiumUser = async (req, res, next) => {
     try {
-
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }
 
 module.exports = UserController;

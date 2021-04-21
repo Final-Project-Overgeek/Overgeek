@@ -1,95 +1,106 @@
-const { Subscription } = require('../models/');
-const redis = require('ioredis');
+const { Subscription } = require("../models/");
+const redis = require("../redis/index");
 
 class SubsciptionController {
   static addSubscription = async (req, res, next) => {
     try {
-      const { name, image, price, days } = req.body
-      const subscriptionData = { name, image, price, days }
+      redis.del("subscriptions");
 
-      const data = await Subscription.create(subscriptionData)
+      const { name, image, price, days } = req.body;
+      const subscriptionData = { name, image, price, days };
+
+      const data = await Subscription.create(subscriptionData);
 
       res.status(201).json(data);
-      await redis.del('subscriptions')
+      await redis.del("subscriptions");
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static readAllSubscriptions = async (req, res, next) => {
     try {
-      const data = await Subscription.findAll()
-
-      res.status(200).json(data)
+      const subscriptionData = await redis.get("subscriptions");
+      if (subscriptionData) {
+        res.status(201).json(JSON.parse(subscriptionData));
+      } else {
+        const data = await Subscription.findAll();
+        res.status(200).json(data);
+        await redis.set("subscriptions", JSON.stringify(data));
+      }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static editSubscription = async (req, res, next) => {
     try {
-      const findData = await Subscription.findByPk(+req.params.id)
+      await redis.del("subscriptions");
+
+      const findData = await Subscription.findByPk(+req.params.id);
       if (!findData) {
         throw {
-          name : "customError",
+          name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 
-      const { name, image, price, days } = req.body
-      const subscriptionData = { name, image, price, days }
+      const { name, image, price, days } = req.body;
+      const subscriptionData = { name, image, price, days };
 
       const data = await Subscription.update(subscriptionData, {
         where: {
-          id: +req.params.id
+          id: +req.params.id,
         },
-        returning:true
-      })
-      if(data[0] !== 0) {
-        res.status(200).json(data)
+        returning: true,
+      });
+      if (data[0] !== 0) {
+        res.status(200).json(data);
       } else {
         throw {
-          name : "customError",
+          name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static deleteSubscription = async (req, res, next) => {
     try {
-      const findData = await Subscription.findByPk(+req.params.id)
+      await redis.del("subscriptions");
+
+      const findData = await Subscription.findByPk(+req.params.id);
       if (!findData) {
         throw {
-          name : "customError",
+          name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 
       const data = await Subscription.destroy({
         where: {
-          id: +req.params.id
-        }
-      })
+          id: +req.params.id,
+        },
+      });
 
-      if(data[0] !== 0) {
-        res.status(200).json({msg: "Subscription type deleted!"})
+      if (data[0] !== 0) {
+        res.status(200).json({ msg: "Subscription type deleted!" });
       } else {
         throw {
           name: "customError",
           msg: "`Invalid ID",
-          status: 404
-        }
+          status: 404,
+        };
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }
 
-module.exports = SubsciptionController
+module.exports = SubsciptionController;
