@@ -18,19 +18,19 @@ const axios = require("axios");
 jest.mock("axios");
 
 beforeAll((done) => {
-  // queryInterface.bulkInsert('Users', [
-  //   {
-  //     username: 'user',
-  //     email: 'user@mail.com',
-  //     password: hashPassword('12345'),
-  //     phone_number: '08122238849',
-  //     premium: false,
-  //     subscription_date: null,
-  //     role: "customer",
-  //     createdAt: new Date(),
-  //     updatedAt: new Date()
-  //   }
-  // ])
+  queryInterface.bulkInsert("Users", [
+    {
+      username: "user",
+      email: "user@mail.com",
+      password: hashPassword("12345"),
+      phone_number: "08122238849",
+      premium: false,
+      subscription_date: null,
+      role: "customer",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ]);
   User.findOne({ where: { email: userLogin.email } })
     .then((data) => {
       if (data) {
@@ -302,6 +302,84 @@ describe("FOR TESTING ROUTE /payments/...", () => {
         //execute
         request(app)
           .post("/payments/info")
+          .set("access_token", access_token)
+          .send(data)
+          .end((err, res) => {
+            if (err) {
+              done(err);
+            } else {
+              //   // assert
+              expect(res.statusCode).toEqual(500);
+              expect(typeof res.body).toEqual("object");
+              expect(res.body).toHaveProperty(
+                "message",
+                "Internal Server Error"
+              );
+              done();
+            }
+          });
+      });
+    });
+
+    describe("testing POST payments/creditcards SUCCESS", () => {
+      it("it will return status code 201", (done) => {
+        const data = {
+          result: {
+            status_code: 200,
+            status_message: "Success, Credit card transaction is successful",
+            bank: "cimb",
+            transaction_id: "e8760d9c-4086-4bbd-8250-8c06cd721ada",
+            order_id: "order_id_annualclipz6xxdhm",
+            redirect_url:
+              "https://api.sandbox.veritrans.co.id/v2/token/rba/redirect/481111-1114-e8760d9c-4086-4bbd-8250-8c06cd721ada",
+            gross_amount: "400000.00",
+            payment_type: "credit_card",
+            transaction_time: "2021-04-21 16:45:59",
+            transaction_status: "capture",
+            fraud_status: "accept",
+            masked_card: "481111-1114",
+            card_type: "credit",
+            finish_redirect_url:
+              "https://www.returnhard.com/?order_id=order_id_annualclipz6xxdhm&status_code=200&transaction_status=capture",
+          },
+          payload: {
+            id: 30,
+            name: "monthly",
+            image:
+              "https://www.pngitem.com/pimgs/m/93-938358_transparent-anniversary-png-1-year-anniversary-png-png.png",
+            price: 400000,
+            days: 360,
+            createdAt: "2021-04-18T14:33:22.301Z",
+            updatedAt: "2021-04-18T14:33:22.301Z",
+          },
+        };
+
+        //execute
+        request(app)
+          .post("/payments/creditcards")
+          .set("access_token", access_token)
+          .send(data)
+          .end((err, res) => {
+            if (err) {
+              done(err);
+            } else {
+              //   // assert
+              expect(res.statusCode).toEqual(201);
+              expect(typeof res.body).toEqual("object");
+              // expect(res.body).toHaveProperty('message', "Invalid Token!");
+              done();
+            }
+          });
+      });
+    });
+
+    describe("testing POST payments/creditcards ERROR with empty data", () => {
+      it("it will return status code 500", (done) => {
+        const data = {};
+
+        //execute
+        request(app)
+          .post("/payments/creditcards")
           .set("access_token", access_token)
           .send(data)
           .end((err, res) => {

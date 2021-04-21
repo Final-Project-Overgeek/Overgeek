@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">16.67% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>1/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -73,33 +73,33 @@
 <a name='L14'></a><a href='#L14'>14</a>
 <a name='L15'></a><a href='#L15'>15</a>
 <a name='L16'></a><a href='#L16'>16</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">function <span class="fstat-no" title="function not covered" >countDate(</span>type) {
-  const today = <span class="cstat-no" title="statement not covered" >new Date()</span>
-  let year = <span class="cstat-no" title="statement not covered" >Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[0])</span>
-  let month = <span class="cstat-no" title="statement not covered" >Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[1])</span>
-  let day = <span class="cstat-no" title="statement not covered" >Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[2])</span>
-<span class="cstat-no" title="statement not covered" >  if (type === 50000) {</span>
-<span class="cstat-no" title="statement not covered" >    month += 1</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">function countDate(type) {
+  const today = new Date()
+  let year = Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[0])
+  let month = Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[1])
+  let day = Number(JSON.stringify(today).split("T")[0].split('"')[1].split("-")[2])
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (type === 50000) {
+    month += 1
   } else <span class="cstat-no" title="statement not covered" >if (type === 150000) {</span>
 <span class="cstat-no" title="statement not covered" >    month += 6</span>
   } else <span class="cstat-no" title="statement not covered" >if (type === 400000) {</span>
 <span class="cstat-no" title="statement not covered" >    year += 1</span>
   }
-<span class="cstat-no" title="statement not covered" >  return new Date(year, month, day)</span>
+  return new Date(year, month, day)
 }
 &nbsp;
 module.exports = countDate</pre></td></tr></table></pre>
@@ -109,7 +109,7 @@ module.exports = countDate</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Apr 21 2021 16:59:05 GMT+0700 (Indochina Time)
+                at Wed Apr 21 2021 21:45:30 GMT+0700 (Indochina Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>
