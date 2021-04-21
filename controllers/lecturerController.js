@@ -1,35 +1,47 @@
-const { Lecturer, Rating, Video } = require('../models/')
-const fs = require('fs');
-const redis = require('../redis/index');
+const { Lecturer, Rating, Video } = require("../models/");
+const fs = require("fs");
+const redis = require("../redis/index");
 
 class LecturerController {
   static readAllLecturer = async (req, res, next) => {
     try {
-      const lecturersData = await redis.get('lecturers');
+      const lecturersData = await redis.get("lecturers");
       if (lecturersData) {
-        res.status(200).json(JSON.parse(lecturersData))
+        res.status(200).json(JSON.parse(lecturersData));
       } else {
         const data = await Lecturer.findAll({
-          include: [{
-            model: Rating
-          },
-          {
-            model: Video
-          }],
-          attributes: ['id', 'name', 'profile', 'game', 'role', 'team', 'language', 'image']
-        })
-        let output = []
+          include: [
+            {
+              model: Rating,
+            },
+            {
+              model: Video,
+            },
+          ],
+          attributes: [
+            "id",
+            "name",
+            "profile",
+            "game",
+            "role",
+            "team",
+            "language",
+            "image",
+          ],
+        });
+        let output = [];
         for (let i = 0; i < data.length; i++) {
           let freeVideos = []
           let lecturerRating = 0
   
+
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
-            lecturerRating += data[i].dataValues.Ratings[j].rating
+            lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
           if (lecturerRating === 0) {
-            lecturerRating = 5
+            lecturerRating = 5;
           } else {
-            lecturerRating /= data[i].dataValues.Ratings.length
+            lecturerRating /= data[i].dataValues.Ratings.length;
           }
           for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
             if (data[i].dataValues.Videos[k].isFree) {
@@ -61,39 +73,54 @@ class LecturerController {
         res.status(200).json(output)
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static readLecturerById = async (req, res, next) => {
     try {
-    const lecturerById = await redis.get('lecturer')
+      const lecturerById = await redis.get("lecturer");
+      const parsedLecturer = JSON.parse(lecturerById);
+
       if (lecturerById) {
-        lecturerById.forEach(e => {
+        parsedLecturer.forEach((e) => {
           if (e.id === +req.params.id) {
-            res.status(200).json(JSON.parse(lecturerById))
+            res.status(200).json(JSON.parse(lecturerById));
           }
-        })
+        });
       } else {
         const data = await Lecturer.findOne({
           where: {
-            id: +req.params.id
+            id: +req.params.id,
           },
-          include: [{
-            model: Video
-          },{
-            model: Rating
-          }],
-          attributes: ['id', 'name', 'profile', 'game', 'role', 'team', 'language', 'image']
-        })
-  
+          include: [
+            {
+              model: Video,
+            },
+            {
+              model: Rating,
+            },
+          ],
+          attributes: [
+            "id",
+            "name",
+            "profile",
+            "game",
+            "role",
+            "team",
+            "language",
+            "image",
+          ],
+        });
+
         if (!data) {
           throw {
             name: "customError",
             msg: `404 not found`,
-            status: 404
-          }
+            status: 404,
+          };
         }
+
           let output = []
           let freeVideos = []
           let lecturerRating = 0
@@ -135,87 +162,86 @@ class LecturerController {
           res.status(200).json(output)   
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
 }
 
-
   static addLecturer = async (req, res, next) => {
     try {
-      redis.del('lecturers')
-      redis.del('lecturer')
+      redis.del("lecturers");
+      redis.del("lecturer");
 
-      const dataFile = fs.readFileSync('./key.csv', 'utf-8');
+      const dataFile = fs.readFileSync("./key.csv", "utf-8");
       const image = `data/${dataFile}`;
 
-      const { name, profile, game, role, team, language } = req.body
-      const lecturerData = { name, profile, game, role, team, language, image}
+      const { name, profile, game, role, team, language } = req.body;
+      const lecturerData = { name, profile, game, role, team, language, image };
 
-      const data = await Lecturer.create(lecturerData)
+      const data = await Lecturer.create(lecturerData);
 
-      res.status(201).json(data)
+      res.status(201).json(data);
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static editLecturer = async (req, res, next) => {
     try {
-      redis.del('lecturers')
-      redis.del('lecturer')
+      redis.del("lecturers");
+      redis.del("lecturer");
 
-      const dataFile = fs.readFileSync('./key.csv', 'utf-8');
+      const dataFile = fs.readFileSync("./key.csv", "utf-8");
       const image = `data/${dataFile}`;
 
-      const findData = await Lecturer.findByPk(+req.params.id)
+      const findData = await Lecturer.findByPk(+req.params.id);
       if (!findData) {
         throw {
           name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 
-      const { name, profile, game, role, team, language } = req.body
-      const lecturerData = { name, profile, game, role, team, language, image}
+      const { name, profile, game, role, team, language } = req.body;
+      const lecturerData = { name, profile, game, role, team, language, image };
 
       const data = await Lecturer.update(lecturerData, {
         where: {
-          id: +req.params.id
+          id: +req.params.id,
         },
-        returning: true
-      })
+        returning: true,
+      });
 
       if (data[0] !== 0) {
-        res.status(200).json(data)
-      } 
+        res.status(200).json(data);
+      }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   static deleteLecturer = async (req, res, next) => {
     try {
-      redis.del('lecturers')
-      redis.del('lecturer')
+      redis.del("lecturers");
+      redis.del("lecturer");
 
-      const findData = await Lecturer.findByPk(+req.params.id)
+      const findData = await Lecturer.findByPk(+req.params.id);
       if (!findData) {
         throw {
           name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 
       const data = await Lecturer.destroy({
         where: {
-          id: +req.params.id
-        }
-      })
+          id: +req.params.id,
+        },
+      });
 
       if (data[0] !== 0) {
-        res.status(200).json({msg: "Delete Lecturer Completed!"})
+        res.status(200).json({ msg: "Delete Lecturer Completed!" });
       } else {
         // throw {
         //   name: "customError",
@@ -224,43 +250,46 @@ class LecturerController {
         // }
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
-  static readLecturerByGame = async (req, res , next) => {
+  static readLecturerByGame = async (req, res, next) => {
     try {
-      const lectureByGame = await redis.get('lecturersGame')
-      if (lectureByGame) {
-        const parsedData = JSON.parse(lectureByGame)
+      let output = [];
+      const lectureByGame = await redis.get("lecturersGame");
+      if (lectureByGame !== null) {
+        const parsedData = JSON.parse(lectureByGame);
         if (req.query.game === parsedData[0].game) {
-          res.status(200).json(JSON.parse(lectureByGame))
+          res.status(200).json(JSON.parse(lectureByGame));
         } else {
-          await redis.del('lecturersGame')
+          res.status(200).json(output);
+          await redis.del("lecturersGame");
         }
       } else {
         const data = await Lecturer.findAll({
           where: {
-            game: req.query.game
+            game: req.query.game,
           },
-          include: [{
-            model: Rating
-          },
-          {
-            model: Video
-          }]
-        })
-        let output = []
-  
+          include: [
+            {
+              model: Rating,
+            },
+            {
+              model: Video,
+            },
+          ],
+        });
+
         for (let i = 0; i < data.length; i++) {
-          let lecturerRating = 0
+          let lecturerRating = 0;
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
-            lecturerRating += data[i].dataValues.Ratings[j].rating
+            lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
           if (lecturerRating === 0) {
-            lecturerRating = 5
+            lecturerRating = 5;
           } else {
-            lecturerRating /= data[i].dataValues.Ratings.length
+            lecturerRating /= data[i].dataValues.Ratings.length;
           }
           for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
             if (data[i].dataValues.Videos[k].isFree) {
@@ -288,15 +317,14 @@ class LecturerController {
             videos: freeVideos
           })
         }
-
         await redis.del('lecturersGame')
         await redis.set('lecturersGame', JSON.stringify(output))
         res.status(200).json(output)
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }
 
-module.exports = LecturerController
+module.exports = LecturerController;
