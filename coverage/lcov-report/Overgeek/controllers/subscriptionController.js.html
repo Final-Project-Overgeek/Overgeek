@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15.56% </span>
+                <span class="strong">15.91% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/45</span>
+                <span class='fraction'>7/44</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15.56% </span>
+                <span class="strong">15.91% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/45</span>
+                <span class='fraction'>7/44</span>
             </div>
         
             
@@ -194,7 +194,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -257,132 +256,133 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const { Subscription } = require('../models/');
-const redis = require('../redis/index');
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { Subscription } = require("../models/");
+const redis = require("../redis/index");
 &nbsp;
 class SubsciptionController {
   static addSubscription = <span class="fstat-no" title="function not covered" >as</span>ync (req, res, next) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      redis.del('subscriptions');</span>
+<span class="cstat-no" title="statement not covered" >      redis.del("subscriptions");</span>
 &nbsp;
-      const { name, image, price, days } = <span class="cstat-no" title="statement not covered" >req.body</span>
-      const subscriptionData = <span class="cstat-no" title="statement not covered" >{ name, image, price, days }</span>
+      const { name, image, price, days } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+      const subscriptionData = <span class="cstat-no" title="statement not covered" >{ name, image, price, days };</span>
 &nbsp;
-      const data = <span class="cstat-no" title="statement not covered" >await Subscription.create(subscriptionData)</span>
+      const data = <span class="cstat-no" title="statement not covered" >await Subscription.create(subscriptionData);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      res.status(201).json(data);</span>
-<span class="cstat-no" title="statement not covered" >      await redis.del('subscriptions')</span>
+<span class="cstat-no" title="statement not covered" >      await redis.del("subscriptions");</span>
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      next(err)</span>
+<span class="cstat-no" title="statement not covered" >      next(err);</span>
     }
-  }
+  };
 &nbsp;
   static readAllSubscriptions = <span class="fstat-no" title="function not covered" >as</span>ync (req, res, next) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const subscriptionData = <span class="cstat-no" title="statement not covered" >await redis.get('subscriptions');</span>
+      const subscriptionData = <span class="cstat-no" title="statement not covered" >await redis.get("subscriptions");</span>
 <span class="cstat-no" title="statement not covered" >      if (subscriptionData) {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(201).json(JSON.parse(subscriptionData))</span>
+<span class="cstat-no" title="statement not covered" >        res.status(201).json(JSON.parse(subscriptionData));</span>
       } else {
-        const data = <span class="cstat-no" title="statement not covered" >await Subscription.findAll()</span>
-<span class="cstat-no" title="statement not covered" >        res.status(200).json(data)</span>
-<span class="cstat-no" title="statement not covered" >        await redis.set('subscriptions', JSON.stringify(data))</span>
+        const data = <span class="cstat-no" title="statement not covered" >await Subscription.findAll();</span>
+<span class="cstat-no" title="statement not covered" >        res.status(200).json(data);</span>
+<span class="cstat-no" title="statement not covered" >        await redis.set("subscriptions", JSON.stringify(data));</span>
       }
- 
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      next(err)</span>
+<span class="cstat-no" title="statement not covered" >      next(err);</span>
     }
-  }
+  };
 &nbsp;
   static editSubscription = <span class="fstat-no" title="function not covered" >as</span>ync (req, res, next) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      redis.del('subscriptions');</span>
+<span class="cstat-no" title="statement not covered" >      await redis.del("subscriptions");</span>
 &nbsp;
-      const findData = <span class="cstat-no" title="statement not covered" >await Subscription.findByPk(+req.params.id)</span>
+      const findData = <span class="cstat-no" title="statement not covered" >await Subscription.findByPk(+req.params.id);</span>
 <span class="cstat-no" title="statement not covered" >      if (!findData) {</span>
 <span class="cstat-no" title="statement not covered" >        throw {</span>
-          name : "customError",
+          name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 &nbsp;
-      const { name, image, price, days } = <span class="cstat-no" title="statement not covered" >req.body</span>
-      const subscriptionData = <span class="cstat-no" title="statement not covered" >{ name, image, price, days }</span>
+      const { name, image, price, days } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+      const subscriptionData = <span class="cstat-no" title="statement not covered" >{ name, image, price, days };</span>
 &nbsp;
       const data = <span class="cstat-no" title="statement not covered" >await Subscription.update(subscriptionData, {</span>
         where: {
-          id: +req.params.id
+          id: +req.params.id,
         },
-        returning:true
-      })
-<span class="cstat-no" title="statement not covered" >      if(data[0] !== 0) {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(200).json(data)</span>
+        returning: true,
+      });
+<span class="cstat-no" title="statement not covered" >      if (data[0] !== 0) {</span>
+<span class="cstat-no" title="statement not covered" >        res.status(200).json(data);</span>
       } else {
 <span class="cstat-no" title="statement not covered" >        throw {</span>
-          name : "customError",
-          msg: `404 not found`,
-          status: 404
-        }
+          // name: "customError",
+          // msg: `404 not found`,
+          // status: 404,
+        };
       }
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      next(err)</span>
+<span class="cstat-no" title="statement not covered" >      next(err);</span>
     }
-  }
+  };
 &nbsp;
   static deleteSubscription = <span class="fstat-no" title="function not covered" >as</span>ync (req, res, next) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      redis.del('subscriptions');</span>
+<span class="cstat-no" title="statement not covered" >      await redis.del("subscriptions");</span>
 &nbsp;
-      const findData = <span class="cstat-no" title="statement not covered" >await Subscription.findByPk(+req.params.id)</span>
+      const findData = <span class="cstat-no" title="statement not covered" >await Subscription.findByPk(+req.params.id);</span>
 <span class="cstat-no" title="statement not covered" >      if (!findData) {</span>
 <span class="cstat-no" title="statement not covered" >        throw {</span>
-          name : "customError",
+          name: "customError",
           msg: `404 not found`,
-          status: 404
-        }
+          status: 404,
+        };
       }
 &nbsp;
       const data = <span class="cstat-no" title="statement not covered" >await Subscription.destroy({</span>
         where: {
-          id: +req.params.id
-        }
-      })
+          id: +req.params.id,
+        },
+      });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      if(data[0] !== 0) {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(200).json({msg: "Subscription type deleted!"})</span>
+<span class="cstat-no" title="statement not covered" >      if (data[0] !== 0) {</span>
+<span class="cstat-no" title="statement not covered" >        res.status(200).json({ msg: "Subscription type deleted!" });</span>
       } else {
-<span class="cstat-no" title="statement not covered" >        throw {</span>
-          name: "customError",
-          msg: "`Invalid ID",
-          status: 404
-        }
+        // throw {
+        //   name: "customError",
+        //   msg: "`Invalid ID",
+        //   status: 404,
+        // };
       }
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      next(err)</span>
+<span class="cstat-no" title="statement not covered" >      next(err);</span>
     }
-  }
+  };
 }
 &nbsp;
-module.exports = SubsciptionController</pre></td></tr></table></pre>
+module.exports = SubsciptionController;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Apr 21 2021 10:40:49 GMT+0700 (Indochina Time)
+                at Wed Apr 21 2021 16:59:05 GMT+0700 (Indochina Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

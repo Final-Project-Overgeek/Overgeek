@@ -36,10 +36,13 @@ class LecturerController {
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
             lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
+          console.log(lecturerRating, "<<<<<<<< 1");
           if (lecturerRating === 0) {
             lecturerRating = 5;
+            console.log(lecturerRating, "<<<<<<<< 2");
           } else {
             lecturerRating /= data[i].dataValues.Ratings.length;
+            console.log(lecturerRating, "<<<<<<<< 3");
           }
           output.push({
             id: data[i].id,

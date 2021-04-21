@@ -441,10 +441,10 @@ describe("testing /lecturers", () => {
 
   /* ======================= READ LECTURERS ======================= */
 
-  describe("testing READ /Lecturers", () => {
+  describe("testing READ /lecturers", () => {
     beforeAll((done) => {
       const ratingData = {
-        rating: 5,
+        rating: 0,
         UserId: 2,
         LecturerId: id,
       };
@@ -452,37 +452,59 @@ describe("testing /lecturers", () => {
         done();
       });
     });
-    const body = {
-      id: 10,
-      name: "Pokka",
-      profile:
-        "Ex Pro Player, currently coaching LOL Wildrift divisions of Onic Esports",
-      game: "League of Legends: Wild Rift",
-      role: "Coach",
-      team: "Onic Esports",
-      language: "Indonesia",
-      image:
-        "https://asset-a.grid.id/crop/0x0:0x0/700x0/photo/2020/06/01/3809461670.jpg",
-      rating: 5,
-    };
     it("should return success where status code 200", (done) => {
       request(app)
         .get("/lecturers")
-        .send(body)
         .end((err, res) => {
           if (err) done(err);
           else {
-            // console.log(res.body, '<<<<<<<<<<< HGDHD');
             expect(res.statusCode).toEqual(200);
-            // for(let i = 0; i < res.body.length; i++) {
-            //   expect(res.body[i].name).toEqual(body.name)
-            //   expect(res.body[i].profile).toEqual(body.profile)
-            //   expect(res.body[i].game).toEqual(body.game)
-            //   expect(res.body[i].role).toEqual(body.role)
-            //   expect(res.body[i].team).toEqual(body.team)
-            //   expect(res.body[i].language).toEqual(body.language)
-            //   expect(res.body[i].image).toEqual(body.image)
-            // }
+            done();
+          }
+        });
+    });
+    it("should return success where status code 200", (done) => {
+      request(app)
+        .get(`/lecturers/${id}`)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            done();
+          }
+        });
+    });
+    it("should return success where status code 404", (done) => {
+      request(app)
+        .get("/lecturers/9999")
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(404);
+            done();
+          }
+        });
+    });
+  });
+
+  describe("testing READ /Lecturers", () => {
+    beforeAll((done) => {
+      const ratingData = {
+        rating: (2, 4, 5),
+        UserId: 2,
+        LecturerId: id,
+      };
+      Rating.create(ratingData).then(() => {
+        done();
+      });
+    });
+    it("should return success where status code 200", (done) => {
+      request(app)
+        .get("/lecturers")
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
             done();
           }
         });
@@ -491,21 +513,57 @@ describe("testing /lecturers", () => {
     it("should return success where status code 200", (done) => {
       request(app)
         .get(`/lecturers/${id}`)
-        .send(body)
         .end((err, res) => {
           if (err) done(err);
           else {
-            // console.log(res.body, '<<<<<<<<<<< HGDHD');
             expect(res.statusCode).toEqual(200);
-            // for(let i = 0; i < res.body.length; i++) {
-            //   expect(res.body[i].name).toEqual(body.name)
-            //   expect(res.body[i].profile).toEqual(body.profile)
-            //   expect(res.body[i].game).toEqual(body.game)
-            //   expect(res.body[i].role).toEqual(body.role)
-            //   expect(res.body[i].team).toEqual(body.team)
-            //   expect(res.body[i].language).toEqual(body.language)
-            //   expect(res.body[i].image).toEqual(body.image)
-            // }
+            done();
+          }
+        });
+    });
+    it("should return success where status code 404", (done) => {
+      request(app)
+        .get("/lecturers/9999")
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(404);
+            done();
+          }
+        });
+    });
+  });
+
+  describe("testing READ /Lecturers", () => {
+    beforeAll((done) => {
+      const ratingData = {
+        rating: 3,
+        UserId: 2,
+        LecturerId: id,
+      };
+      Rating.create(ratingData).then(() => {
+        done();
+      });
+    });
+    it("should return success where status code 200", (done) => {
+      request(app)
+        .get("/lecturers")
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            done();
+          }
+        });
+    });
+
+    it("should return success where status code 200", (done) => {
+      request(app)
+        .get(`/lecturers/${id}`)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
             done();
           }
         });
@@ -513,21 +571,10 @@ describe("testing /lecturers", () => {
     it("should return success where status code 200", (done) => {
       request(app)
         .get("/lecturers/99")
-        .send(body)
         .end((err, res) => {
           if (err) done(err);
           else {
-            // console.log(res.body, '<<<<<<<<<<< HGDHD');
             expect(res.statusCode).toEqual(404);
-            // for(let i = 0; i < res.body.length; i++) {
-            //   expect(res.body[i].name).toEqual(body.name)
-            //   expect(res.body[i].profile).toEqual(body.profile)
-            //   expect(res.body[i].game).toEqual(body.game)
-            //   expect(res.body[i].role).toEqual(body.role)
-            //   expect(res.body[i].team).toEqual(body.team)
-            //   expect(res.body[i].language).toEqual(body.language)
-            //   expect(res.body[i].image).toEqual(body.image)
-            // }
             done();
           }
         });
@@ -566,23 +613,47 @@ describe("testing /lecturers", () => {
 
   /* ======================= READ GAMES ======================= */
 
-  describe("success GET /games", () => {
+  describe("testing READ /games from REDIS", () => {
+    beforeAll((done) => {
+      redis
+        .set("lecturersGame", [
+          {
+            id: 3,
+            name: "League of Legends",
+            profile: "MMORPG",
+            game: "Mobile",
+            role: "one",
+            team: "others team",
+            language: "English",
+            image: "www.google.co.id",
+            rating: 5,
+            videos: "www.video.com",
+          },
+        ])
+        .then(() => done());
+    });
+
     it("should return status code 200", (done) => {
-      const body = {
-        id: 12,
-        name: "Radians",
-        profile: "LOL Wildrift player of MBR Esports",
-        game: "League of Legends: Wild Rift",
-        role: "Midlaner",
-        team: "MBR Esports",
-        language: "Indonesia",
-        image: "https://i.ytimg.com/vi/VPk1VCE6Un4/maxresdefault.jpg",
-        rating: 5,
-        videos: [],
-      };
       request(app)
         .get("/lecturers/game?game=Mobile Legends")
-        .send(body)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            done();
+          }
+        });
+    });
+
+    afterAll((done) => {
+      redis.del("lecturersGame");
+    });
+  });
+
+  describe("success GET /games", () => {
+    it("should return status code 200", (done) => {
+      request(app)
+        .get("/lecturers/game?game=Mobile Legends")
         .end((err, res) => {
           if (err) done(err);
           else {
