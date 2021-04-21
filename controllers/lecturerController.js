@@ -95,15 +95,11 @@ class LecturerController {
   static readLecturerById = async (req, res, next) => {
     try {
       const lecturerById = await redis.get("lecturer");
-      const parsedLecturer = JSON.parse(lecturerById);
       const userRed = await redis.get('userRedis')
-
-      if (lecturerById && !userRed) {
-        parsedLecturer.forEach((e) => {
-          if (e.id === +req.params.id) {
-            res.status(200).json(JSON.parse(lecturerById));
-          }
-        });
+      const parsedLecturer = JSON.parse(lecturerById);
+      
+      if (lecturerById && !userRed && parsedLecturer[0].id === req.params.id) {
+        res.status(200).json(JSON.parse(lecturerById));
       } else {
         let user = false
         if (userRed) {
