@@ -22,7 +22,7 @@ router.post('upload/uploadVideos', upload.single('video'), async (req, res) => {
   res.status(201).json({awsVideo: `/upload/data/${result.Key}`})
 })
 
-router.post('upload/uploadImages', upload.single('video'), async (req, res) => {
+router.post('upload/uploadImages', upload.single('image'), async (req, res) => {
   const file = req.file;
   // console.log(file);
 
