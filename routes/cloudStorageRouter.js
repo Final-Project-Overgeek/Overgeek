@@ -28,6 +28,7 @@ router.post("upload/uploadVideos", upload.single("video"), async (req, res) => {
 });
 
 router.post("upload/uploadImages", upload.single("image"), async (req, res) => {
+
   const file = req.file;
   // console.log(file);
 
