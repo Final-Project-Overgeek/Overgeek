@@ -6,16 +6,19 @@ class LecturerController {
   static readAllLecturer = async (req, res, next) => {
     try {
       const lecturersData = await redis.get("lecturers");
-      if (lecturersData) {
+      const userRed = await redis.get('userRedis')
+      if (lecturersData && !userRed) {
         res.status(200).json(JSON.parse(lecturersData));
       } else {
-      const userRed = await redis.get('userRedis')
-      const parsedUser = JSON.parse(userRed)
-      const user = await User.findOne({
-        where: {
-          id: parsedUser.id
-        }
-      })
+      let user = false
+      if (userRed) {
+        const parsedUser = JSON.parse(userRed)
+        user = await User.findOne({
+          where: {
+            id: parsedUser.id
+          }
+        })
+      }
         const data = await Lecturer.findAll({
           include: [
             {
@@ -90,21 +93,24 @@ class LecturerController {
     try {
       const lecturerById = await redis.get("lecturer");
       const parsedLecturer = JSON.parse(lecturerById);
+      const userRed = await redis.get('userRedis')
 
-      if (lecturerById) {
+      if (lecturerById && !userRed) {
         parsedLecturer.forEach((e) => {
           if (e.id === +req.params.id) {
             res.status(200).json(JSON.parse(lecturerById));
           }
         });
       } else {
-        const userRed = await redis.get('userRedis')
-        const parsedUser = JSON.parse(userRed)
-        const user = await User.findOne({
-          where: {
-            id: parsedUser.id
-          }
-        })
+        let user = false
+        if (userRed) {
+          const parsedUser = JSON.parse(userRed)
+          user = await User.findOne({
+            where: {
+              id: parsedUser.id
+            }
+          })
+        }
         const data = await Lecturer.findOne({
           where: {
             id: +req.params.id,
@@ -149,7 +155,6 @@ class LecturerController {
           } else {
             lecturerRating /= data.dataValues.Ratings.length
           }
-          console.log(user.premium)
           for (let k = 0; k < data.dataValues.Videos.length; k++) {
             if (data.dataValues.Videos[k].isFree) {
               freeVideos.push(data.dataValues.Videos[k])
@@ -277,17 +282,20 @@ class LecturerController {
     try {
       let output = [];
       const lectureByGame = await redis.get("lecturersGame");
+      const userRed = await redis.get('userRedis')
       const parsedData = JSON.parse(lectureByGame);
-      if (lectureByGame && req.query.game === parsedData[0].game) {
+      if (lectureByGame && req.query.game === parsedData[0].game && !userRed) {
           res.status(200).json(JSON.parse(lectureByGame));
       } else {
-        const userRed = await redis.get('userRedis')
-        const parsedUser = JSON.parse(userRed)
-        const user = await User.findOne({
-          where: {
-            id: parsedUser.id
-          }
-        })
+        let user = false
+        if (userRed) {
+          const parsedUser = JSON.parse(userRed)
+          user = await User.findOne({
+            where: {
+              id: parsedUser.id
+            }
+          })
+        }
         const data = await Lecturer.findAll({
           where: {
             game: req.query.game,
