@@ -4,6 +4,7 @@ const {randomId} = require('../helpers/randomId')
 const UserController  = require('./userController')
 const countDate = require('../helpers/countDate')
 const dateFormat = require('../helpers/dateFormat')
+const signature = require('../helpers/signature')
 
 class PaymentController {
   static createToken(req, res, next){
@@ -37,7 +38,7 @@ class PaymentController {
       res.status(201).json(data.data)
     })
     .catch(err => {
-      console.log(err)
+      next(err)
     })
   }
 
@@ -65,15 +66,7 @@ class PaymentController {
       })
       res.status(201).json(paymentData)
     } catch (err) {
-      console.log(err)
       next(err)
-    }
-  }
-
-  static test(req, res, next){
-    console.log(req.params.game)
-    if(req.body.settlement){
-
     }
   }
 
@@ -98,8 +91,13 @@ class PaymentController {
     })
   }
   static info = async (req, res, next) => {
-    console.log('Masuk static INFO')
     try {
+      const { order_id, status_code, gross_amount } = req.body
+      const signatureKey = signature((order_id + status_code + gross_amount + "SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q"))
+      if(signatureKey !== req.body.signature_key){
+        throw err
+      }
+      
       const paymentData = await Payment.findOne({where : {
         token : req.body.order_id
       }})
@@ -115,7 +113,6 @@ class PaymentController {
           subsType = subscriptionDatas[i].price
         }
       }
-      console.log('subsType',subsType)
       const subscriptionData = await Subscription.findOne({
         where: {
           price: subsType
@@ -144,53 +141,13 @@ class PaymentController {
       res.status(201).json(transactionData)
 
     } catch (err) {
-      console.log(err)
       next(err)
     }
     
   }
 
-
-  static checkExists(req, res, next){ 
-    let id = Number(req.decoded.id)
-    let order_id = ''
-    Payment.findAll({where: {
-      UserId: id
-    }})
-    .then(data => {
-      if(data) { 
-        console.log(data[19].dataValues.token)
-        order_id = data[19].dataValues.token
-        return axios({
-          url: `https://api.sandbox.midtrans.com/v2/${data[(data.length - 1)].dataValues.token}/status`,
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization:
-            "Basic " +
-                  Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
-               
-            },
-        })
-      }
-      else {
-        console.log('tidak ada tagihan')
-      }
-    })
-    .then(data => {
-      console.log('asdasd',data.data)
-      if(data.data.transaction_status === 'settlement'){
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
-
   static creditcardPayments = async(req, res, next) => {
     try {
-      console.log('dari controller CC', req.body)
       //table payments
       await Payment.create({
         method: req.body.result.payment_type,
@@ -244,7 +201,6 @@ class PaymentController {
 
       res.status(201).json(transactionData)
     } catch (err) {
-      console.log(err)
       next(err)
     } 
     
