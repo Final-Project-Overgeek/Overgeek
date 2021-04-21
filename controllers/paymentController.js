@@ -187,6 +187,68 @@ class PaymentController {
       console.log(err)
     })
   }
+
+  static creditcardPayments = async(req, res, next) => {
+    try {
+      console.log('dari controller CC', req.body)
+      //table payments
+      await Payment.create({
+        method: req.body.result.payment_type,
+        status: true,
+        subsription_type: req.body.payload.name,
+        transaction_time: dateFormat(req.body.result.transaction_time),
+        UserId: req.decoded.id,
+        token: req.body.result.order_id,
+        amount: req.body.payload.price
+      })
+      //table transactions
+      const transactionData = await Transaction.create({
+        transaction_date: dateFormat(req.body.result.transaction_time),
+        subscription_type: req.body.payload.name,
+        UserId: req.decoded.id
+      })
+      //table user
+      const userData = await User.findOne({
+        where: {
+          id: req.decoded.id
+        },
+      });
+
+      let subsType
+      const subscriptionDatas = await Subscription.findAll()
+      for (let i = 0; i < subscriptionDatas.length; i++) {
+        if (subscriptionDatas[i].price === Number(req.body.result.gross_amount.split('.')[0])) {
+          subsType = subscriptionDatas[i].price
+        }
+      }
+      const subscriptionData = await Subscription.findOne({
+        where: {
+          price: subsType
+        }
+      })
+
+      const expiredDate = countDate(subsType)
+      
+      const data = {
+        ...userData,
+        premium: true,
+        subscription_date: expiredDate
+      };
+
+      const editedData = await User.update(data, {
+        where: {
+          id: req.decoded.id,
+        },
+        returning: true,
+      });
+
+      res.status(201).json(transactionData)
+    } catch (err) {
+      console.log(err)
+      next(err)
+    } 
+    
+  }
 }
 
 module.exports = PaymentController

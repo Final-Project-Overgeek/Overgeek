@@ -1,4 +1,4 @@
-const { Lecturer, Rating, Video } = require("../models/");
+const { Lecturer, Rating, Video, User } = require("../models/");
 const fs = require("fs");
 const redis = require("../redis/index");
 
@@ -6,9 +6,19 @@ class LecturerController {
   static readAllLecturer = async (req, res, next) => {
     try {
       const lecturersData = await redis.get("lecturers");
-      if (lecturersData) {
+      const userRed = await redis.get('userRedis')
+      if (lecturersData && !userRed) {
         res.status(200).json(JSON.parse(lecturersData));
       } else {
+      let user = false
+      if (userRed) {
+        const parsedUser = JSON.parse(userRed)
+        user = await User.findOne({
+          where: {
+            id: parsedUser.id
+          }
+        })
+      }
         const data = await Lecturer.findAll({
           include: [
             {
@@ -31,8 +41,10 @@ class LecturerController {
         });
         let output = [];
         for (let i = 0; i < data.length; i++) {
-          let lecturerRating = 0;
-          console.log(data[i]);
+          let freeVideos = []
+          let lecturerRating = 0
+  
+
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
             lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
@@ -44,6 +56,21 @@ class LecturerController {
             lecturerRating /= data[i].dataValues.Ratings.length;
             console.log(lecturerRating, "<<<<<<<< 3");
           }
+          for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
+            if (data[i].dataValues.Videos[k].isFree) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else if (!data[i].dataValues.Videos[k].isFree && user.premium) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else {
+              freeVideos.push({
+                title: data[i].dataValues.Videos[k].title,
+                url: 'VIDEO BERBAYAR',
+                thumbnail: data[i].dataValues.Videos[k].thumbnail,
+                isFree: data[i].dataValues.Videos[k].isFree,
+                LecturerId: data[i].dataValues.Videos[k].LecturerId
+              })
+            }
+          }
           output.push({
             id: data[i].id,
             name: data[i].name,
@@ -54,11 +81,11 @@ class LecturerController {
             language: data[i].language,
             image: data[i].image,
             rating: lecturerRating,
-            videos: data[i].dataValues.Videos,
-          });
+            videos: freeVideos
+          })
         }
-        await redis.set("lecturers", JSON.stringify(output));
-        res.status(200).json(output);
+        await redis.set('lecturers', JSON.stringify(output))
+        res.status(200).json(output)
       }
     } catch (err) {
       next(err);
@@ -68,14 +95,21 @@ class LecturerController {
   static readLecturerById = async (req, res, next) => {
     try {
       const lecturerById = await redis.get("lecturer");
+      const userRed = await redis.get('userRedis')
       const parsedLecturer = JSON.parse(lecturerById);
-      if (lecturerById) {
-        parsedLecturer.forEach((e) => {
-          if (e.id === +req.params.id) {
-            res.status(200).json(JSON.parse(lecturerById));
-          }
-        });
+      
+      if (lecturerById && !userRed && parsedLecturer[0].id === req.params.id) {
+        res.status(200).json(JSON.parse(lecturerById));
       } else {
+        let user = false
+        if (userRed) {
+          const parsedUser = JSON.parse(userRed)
+          user = await User.findOne({
+            where: {
+              id: parsedUser.id
+            }
+          })
+        }
         const data = await Lecturer.findOne({
           where: {
             id: +req.params.id,
@@ -107,36 +141,53 @@ class LecturerController {
             status: 404,
           };
         }
-        let output = [];
-        let lecturerRating = 0;
-        for (let i = 0; i < data.dataValues.Ratings.length; i++) {
-          lecturerRating += data.dataValues.Ratings[i].rating;
-        }
 
-        if (lecturerRating === 0) {
-          lecturerRating = 5;
-        } else {
-          lecturerRating /= data.dataValues.Ratings.length;
-        }
-        output.push({
-          id: data.id,
-          name: data.name,
-          profile: data.profile,
-          game: data.game,
-          role: data.role,
-          team: data.team,
-          language: data.language,
-          image: data.image,
-          rating: lecturerRating,
-          videos: data.dataValues.Videos,
-        });
-        await redis.set("lecture", JSON.stringify(output));
-        res.status(200).json(output);
+          let output = []
+          let freeVideos = []
+          let lecturerRating = 0
+          for (let i = 0; i < data.dataValues.Ratings.length; i++) {
+            lecturerRating += data.dataValues.Ratings[i].rating
+          }
+    
+          if (lecturerRating === 0) {
+            lecturerRating = 5
+          } else {
+            lecturerRating /= data.dataValues.Ratings.length
+          }
+          for (let k = 0; k < data.dataValues.Videos.length; k++) {
+            if (data.dataValues.Videos[k].isFree) {
+              freeVideos.push(data.dataValues.Videos[k])
+            } else if (!data.dataValues.Videos[k].isFree && user.premium) {
+              freeVideos.push(data.dataValues.Videos[k])
+            } else {
+              freeVideos.push({
+                title: data.dataValues.Videos[k].title,
+                url: 'VIDEO BERBAYAR',
+                thumbnail: data.dataValues.Videos[k].thumbnail,
+                isFree: data.dataValues.Videos[k].isFree,
+                LecturerId: data.dataValues.Videos[k].LecturerId
+              })
+            }
+          }
+          output.push({
+            id: data.id,
+            name: data.name,
+            profile: data.profile,
+            game: data.game,
+            role: data.role,
+            team: data.team,
+            language: data.language,
+            image: data.image,
+            rating: lecturerRating,
+            videos: freeVideos
+          })
+          await redis.set('lecturer', JSON.stringify(output))
+          res.status(200).json(output)   
       }
     } catch (err) {
       next(err);
     }
-  };
+}
 
   static addLecturer = async (req, res, next) => {
     try {
@@ -230,10 +281,20 @@ class LecturerController {
     try {
       let output = [];
       const lectureByGame = await redis.get("lecturersGame");
+      const userRed = await redis.get('userRedis')
       const parsedData = JSON.parse(lectureByGame);
-      if (parsedData !== null && req.query.game === parsedData[0].game) {
-        res.status(200).json(JSON.parse(lectureByGame));
+      if (lectureByGame && req.query.game === parsedData[0].game && !userRed) {
+          res.status(200).json(JSON.parse(lectureByGame));
       } else {
+        let user = false
+        if (userRed) {
+          const parsedUser = JSON.parse(userRed)
+          user = await User.findOne({
+            where: {
+              id: parsedUser.id
+            }
+          })
+        }
         const data = await Lecturer.findAll({
           where: {
             game: req.query.game,
@@ -247,9 +308,9 @@ class LecturerController {
             },
           ],
         });
-
         for (let i = 0; i < data.length; i++) {
           let lecturerRating = 0;
+          let freeVideos = []
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
             lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
@@ -257,6 +318,21 @@ class LecturerController {
             lecturerRating = 5;
           } else {
             lecturerRating /= data[i].dataValues.Ratings.length;
+          }
+          for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
+            if (data[i].dataValues.Videos[k].isFree) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else if (!data[i].dataValues.Videos[k].isFree && user.premium) {
+              freeVideos.push(data[i].dataValues.Videos[k])
+            } else {
+              freeVideos.push({
+                title: data[i].dataValues.Videos[k].title,
+                url: 'VIDEO BERBAYAR',
+                thumbnail: data[i].dataValues.Videos[k].thumbnail,
+                isFree: data[i].dataValues.Videos[k].isFree,
+                LecturerId: data[i].dataValues.Videos[k].LecturerId
+              })
+            }
           }
           output.push({
             id: data[i].id,
@@ -268,12 +344,12 @@ class LecturerController {
             language: data[i].language,
             image: data[i].image,
             rating: lecturerRating,
-            videos: data[i].dataValues.Videos,
-          });
+            videos: freeVideos
+          })
         }
-        // await redis.del('lecturersGame')
-        await redis.set("lecturersGame", JSON.stringify(output));
-        res.status(200).json(output);
+        await redis.del('lecturersGame')
+        await redis.set('lecturersGame', JSON.stringify(output))
+        res.status(200).json(output)
       }
     } catch (err) {
       next(err);

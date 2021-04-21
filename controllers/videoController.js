@@ -68,8 +68,8 @@ class VideoController {
     try {
       await redis.del("videos");
       await redis.del("video");
-
       const findData = await Video.findByPk(+req.params.id);
+
       if (!findData) {
         throw {
           name: "customError",
@@ -100,10 +100,12 @@ class VideoController {
 
   static editVideo = async (req, res, next) => {
     try {
+
       await redis.del("videos");
       await redis.del("video");
 
       const findData = await Video.findByPk(+req.params.id);
+
       if (!findData) {
         throw {
           name: "customError",
