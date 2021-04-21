@@ -230,14 +230,9 @@ class LecturerController {
     try {
       let output = [];
       const lectureByGame = await redis.get("lecturersGame");
-      if (lectureByGame !== null) {
-        const parsedData = JSON.parse(lectureByGame);
-        if (req.query.game === parsedData[0].game) {
-          res.status(200).json(JSON.parse(lectureByGame));
-        } else {
-          res.status(200).json(output);
-          await redis.del("lecturersGame");
-        }
+      const parsedData = JSON.parse(lectureByGame);
+      if (parsedData !== null && req.query.game === parsedData[0].game) {
+        res.status(200).json(JSON.parse(lectureByGame));
       } else {
         const data = await Lecturer.findAll({
           where: {

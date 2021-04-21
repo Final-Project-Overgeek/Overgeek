@@ -651,6 +651,17 @@ describe("testing /lecturers", () => {
   });
 
   describe("success GET /games", () => {
+    // beforeAll((done) => {
+    //   const ratingData = {
+    //     rating: 0,
+    //     UserId: 2,
+    //     LecturerId: id,
+    //   };
+    //   Rating.put(ratingData).then(() => {
+    //     done();
+    //   });
+    // });
+
     it("should return status code 200", (done) => {
       request(app)
         .get("/lecturers/game?game=Mobile Legends")
