@@ -14,8 +14,8 @@ class UserController {
         email: req.body.email,
         password: req.body.password,
         phone_number: req.body.phone_number,
-        premium: true,
-        subscription_date: countDate('annual'),
+        premium: false,
+        subscription_date: null,
         role: "customer",
       };
 
@@ -91,7 +91,7 @@ class UserController {
         role: user.role,
       });
 
-      res.status(200).json(user);
+      res.status(200).json({access_token});
     } catch (err) {
       next(err);
     }
