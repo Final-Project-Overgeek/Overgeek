@@ -59,9 +59,9 @@ class SubsciptionController {
         res.status(200).json(data);
       } else {
         throw {
-          name: "customError",
-          msg: `404 not found`,
-          status: 404,
+          // name: "customError",
+          // msg: `404 not found`,
+          // status: 404,
         };
       }
     } catch (err) {
@@ -91,11 +91,11 @@ class SubsciptionController {
       if (data[0] !== 0) {
         res.status(200).json({ msg: "Subscription type deleted!" });
       } else {
-        throw {
-          name: "customError",
-          msg: "`Invalid ID",
-          status: 404,
-        };
+        // throw {
+        //   name: "customError",
+        //   msg: "`Invalid ID",
+        //   status: 404,
+        // };
       }
     } catch (err) {
       next(err);

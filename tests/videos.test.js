@@ -1,47 +1,60 @@
-const request = require('supertest');
-const app = require('../app');
-const { User } = require('../models');
-const { generateToken } = require('../helpers/jwt');
-// const deleteVideos = require('../helpers/deleteVideos');
-let token = ''
+const request = require("supertest");
+const app = require("../app");
+const { User, Lecturer } = require("../models");
+const { generateToken } = require("../helpers/jwt");
+const redis = require("../redis/index");
+let token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJhZG1pbjcyQG1haWwuY29tIiwidXNlcm5hbWUiOiJodWFtaXJhIiwicGhvbmVfbnVtYmVyIjoiMDk4MDk4OTgiLCJzdWJzY3JpcHRpb25fZGF0ZSI6bnVsbCwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjE4OTU1MjA5fQ.aSfDnXr-Z6rwpxIXx_EtueNTdYQsydSa3uNBF421BJU";
+let LecturerId;
 
-beforeAll((done) => {
-  User.findOne({ where: { role: 'admin' }})
-  .then((data) => {
-    // console.log(data.dataValues);
-    token = generateToken(data.dataValues)
-    done()
-  })
-  .catch(err => done(err))
-})
-describe('testing /courses', () => {
+describe("testing /courses", () => {
+  beforeAll((done) => {
+    Lecturer.findAll()
+      .then((data) => {
+        console.log(data, "<<<<<<< TES");
+        LecturerId = data[0].dataValues.id;
+        done();
+      })
+      .catch((err) => done(err));
+  });
 
+  beforeAll((done) => {
+    User.findOne({ where: { role: "admin" } })
+      .then((data) => {
+        // token = generateToken(data.dataValues);
+        done();
+      })
+      .catch((err) => done(err));
+  });
+});
+
+describe("testing /courses", () => {
   /* ======================= CREATE COURSES ======================= */
 
-  describe('success POST /courses', () => {
-    it('should return response with status 201', (done) => {
+  describe("success POST /courses", () => {
+    it("should return response with status 201", (done) => {
+      console.log(token, "TOKET");
       const body = {
-        title: 'hello world',
-        url: 'https://google.co.id',
-        thumbnail: 'acak',
-        isFree: false
-      }
-      // const acctoken = ['access_token']
+        title: "hello world",
+        url: "https://google.co.id",
+        thumbnail: "acak",
+        isFree: false,
+        // LecturerId: 210,
+      };
       request(app)
-        .post('/courses')
-        .set('access_token', token)
+        .post("/courses/210")
+        .set("access_token", token)
         .send(body)
         .end((err, res) => {
-          if (err) console.log(err)
+          if (err) done(err);
           else {
-            expect(res.statusCode).toEqual(201)
-            expect(typeof res.body).toEqual('object');
-            // expect(res.body.product).toHaveProperty("title", body.title);
-            done()
+            expect(res.statusCode).toEqual(201);
+            expect(typeof res.body).toEqual("object");
+            done();
           }
-        })
-    })
-  })
+        });
+    });
+  });
 
   // describe('POST /courses failed', () => {
   //   it('should return response when access token is empty', (done) => {
@@ -129,23 +142,113 @@ describe('testing /courses', () => {
   //   // })
   // })
 
-  // /* ======================= READ COURSES ======================= */
+  /* ======================= READ COURSES REDIS ======================= */
 
-  // describe('success READ /courses', () => {
-  //   it('should return response with status code 200', (done) => {
-  //     request(app)
-  //       .get('/courses')
-  //       .set('access_token', token)
-  //       .end((err, res) => {
-  //         if (err) done(err)
-  //         else {
-  //           expect(res.statusCode).toEqual(200)
-  //           expect(typeof res.body).toEqual('object');
-  //           done()
-  //         }
-  //       })
-  //   })
-  // })
+  describe("testing READ /courses from REDIS", () => {
+    beforeAll((done) => {
+      redis
+        .set(
+          "videos",
+          JSON.stringify([
+            {
+              id: 210,
+              title: "Lutung Kasarung",
+              url: "https://google.co.id",
+              thumbnail: "acak",
+              isFree: false,
+            },
+          ])
+        )
+        .then(() => done());
+    });
+
+    it("should return status code 200", (done) => {
+      request(app)
+        .get("/courses")
+        .set("access_token", token)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            done();
+          }
+        });
+    });
+
+    afterAll((done) => {
+      redis.del("lecturers");
+      done();
+    });
+  });
+
+  describe("testing READ /courses/:id from REDIS", () => {
+    beforeAll((done) => {
+      redis
+        .set(
+          "video",
+          JSON.stringify([
+            {
+              id: 210,
+              title: "Lutung Kasarung",
+              url: "https://google.co.id",
+              thumbnail: "acak",
+              isFree: false,
+            },
+          ])
+        )
+        .then(() => done());
+    });
+
+    it("should return status code 200", (done) => {
+      request(app)
+        .get("/courses/" + 210)
+        .set("access_token", token)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            done();
+          }
+        });
+    });
+
+    afterAll((done) => {
+      redis.del("lecturers");
+      done();
+    });
+  });
+
+  /* ======================= READ COURSES ======================= */
+
+  describe("success READ /courses", () => {
+    it("should return response with status code 200", (done) => {
+      request(app)
+        .get("/courses")
+        .set("access_token", token)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            expect(typeof res.body).toEqual("object");
+            done();
+          }
+        });
+    });
+
+    it("should return response with status code 200", (done) => {
+      request(app)
+        .get("/courses" + 210)
+        .set("access_token", token)
+        .end((err, res) => {
+          if (err) done(err);
+          else {
+            expect(res.statusCode).toEqual(200);
+            expect(typeof res.body).toEqual("object");
+            done();
+          }
+        });
+    });
+  });
 
   // /* ======================= UPDATE COURSES ======================= */
 
@@ -227,4 +330,4 @@ describe('testing /courses', () => {
   //       })
   //   })
   // })
-})
+});
