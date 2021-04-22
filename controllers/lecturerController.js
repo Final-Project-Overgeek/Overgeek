@@ -44,17 +44,13 @@ class LecturerController {
           let freeVideos = []
           let lecturerRating = 0
   
-
           for (let j = 0; j < data[i].dataValues.Ratings.length; j++) {
             lecturerRating += data[i].dataValues.Ratings[j].rating;
           }
-          console.log(lecturerRating, "<<<<<<<< 1");
           if (lecturerRating === 0) {
             lecturerRating = 5;
-            console.log(lecturerRating, "<<<<<<<< 2");
           } else {
             lecturerRating /= data[i].dataValues.Ratings.length;
-            console.log(lecturerRating, "<<<<<<<< 3");
           }
           for (let k = 0; k < data[i].dataValues.Videos.length; k++) {
             if (data[i].dataValues.Videos[k].isFree) {
@@ -279,10 +275,12 @@ class LecturerController {
 
   static readLecturerByGame = async (req, res, next) => {
     try {
+      
       let output = [];
       const lectureByGame = await redis.get("lecturersGame");
       const userRed = await redis.get('userRedis')
       const parsedData = JSON.parse(lectureByGame);
+      
       if (lectureByGame && req.query.game === parsedData[0].game && !userRed) {
           res.status(200).json(JSON.parse(lectureByGame));
       } else {
@@ -308,6 +306,7 @@ class LecturerController {
             },
           ],
         });
+        
         for (let i = 0; i < data.length; i++) {
           let lecturerRating = 0;
           let freeVideos = []

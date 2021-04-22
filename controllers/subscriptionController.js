@@ -57,13 +57,13 @@ class SubsciptionController {
       });
       if (data[0] !== 0) {
         res.status(200).json(data);
-      } else {
-        throw {
+      } //else {
+        // throw {
           // name: "customError",
           // msg: `404 not found`,
           // status: 404,
-        };
-      }
+        // };
+      // }
     } catch (err) {
       next(err);
     }

@@ -69,7 +69,7 @@ class PaymentController {
       next(err)
     }
   }
-
+  
   static check(req, res, next){
     axios({
       url: 'https://api.sandbox.midtrans.com/v2/asdas123sass2323s3dsffgg/status', //order_id
@@ -90,6 +90,7 @@ class PaymentController {
       console.log(err)
     })
   }
+
   static info = async (req, res, next) => {
     try {
       const { order_id, status_code, gross_amount } = req.body

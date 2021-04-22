@@ -1,69 +1,166 @@
 const request = require("supertest");
-const app = require("../app");
+const app = require("../app.js");
+const { hashPassword, comparePassword } = require("../helpers/bcrypt");
 const { User, Lecturer, Rating } = require("../models");
-const { generateToken } = require("../helpers/jwt");
-let token = "";
+const { generateToken } = require("../helpers/jwt.js");
 const { sequelize } = require("../models");
 const { queryInterface } = sequelize;
 const redis = require("../redis/index");
 
-let id;
+let invalidAccessToken =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAyLCJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2MTg5MjkwNzJ9.kb6VPt5xrbwUdQg4GhSRxvx4y1L8zPmjPB5_HVKsjQ";
+
+jest.mock("axios");
+
+let userLogin = {
+  email: 'admin@mail.com',
+  password: '12345'
+};
+let token = '';
+let lecturerId = 1;
 
 beforeAll(async (done) => {
-  queryInterface
-    .bulkInsert(
-      "Lecturers",
-      [
-        {
-          name: "Mobile Legends Esport",
-          profile: "MOBA",
-          game: "mobile game",
-          role: "mistery",
-          team: "Hayabusa",
-          language: "english",
-          image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ],
-      {}
-    )
-    .then(() => {
-      return User.findOne({ where: { role: "admin" } });
+  await queryInterface.bulkInsert('Users', [
+    {
+      id: 1,
+      username: 'admin',
+      email: 'admin@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08922777773',
+      premium: false,
+      subscription_date: null,
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      username: 'customer',
+      email: 'customer@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08122339949',
+      premium: false,
+      subscription_date: null,
+      role: "",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Lecturers', [
+    {
+      id: 1,
+      name: "Rudy Santoso",
+      profile: "MOBA",
+      game: "Mobile Legends",
+      role: "Coach",
+      team: "Hayabusa",
+      language: "English",
+      image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Videos', [
+    {
+      id: 1,
+      title: "Ban & Picks Guide",
+      url: "/upload/data/e3355f2b46ba90f13779db58fa8d5120",
+      thumbnail: "https://imgur.com/a/Wjpk2BU",
+      isFree: false,
+      LecturerId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      title: "Knowing Your Role",
+      url: "/upload/data/05bde798a27c0951cf535e2e55ee2bbf",
+      thumbnail: "https://imgur.com/a/0CWNUuH",
+      isFree: true,
+      LecturerId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Subscriptions', [
+    {
+      id: 1,
+      name: "monthly",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834423000647860255/MONTHLY_free-file.png",
+      price: 50000,
+      days: 30,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      name: "season",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834422485235662848/SEASON_free-file.png",
+      price: 250000,
+      days: 180,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 3,
+      name: "annual",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834422727431290941/ANNUAL_free-file.png",
+      price: 400000,
+      days: 360,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+  User.findOne({ where: { email: userLogin.email } })
+    .then(data => {
+      if (data) {
+        let cekPass = comparePassword(userLogin.password, data.password)
+        let payload = { id: data.id, email: data.email }
+        if (cekPass) {
+          token = generateToken(payload);
+          done()
+        } else {
+          throw new Error('Invalid email/password');
+        }
+      } else {
+        throw new Error('Invalid email/password');
+      }
     })
-    .then((data) => {
-      token = generateToken(data.dataValues);
+    .catch(err => {
+      done(err)
+    })
+
+  Lecturer.findOne({ where: { name: 'Rudy Santoso' } })
+    .then(data => {
+      lecturerId = data.dataValues.id;
       done();
     })
-    .catch((err) => done(err));
-  // try {
-  //   queryInterface.bulkInsert('Lecturers', [
-  //     {
-  //       name: 'Mobile Legends Esport',
-  //       profile: 'MOBA',
-  //       game: 'mobile game',
-  //       role: 'mistery',
-  //       team: 'Hayabusa',
-  //       language: 'english',
-  //       image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
-  //       createdAt: new Date(),
-  //       updatedAt: new Date()
-  //     }
-  //   ], {})
-  //   done()
-  // } catch (error) {
-  //   done(error)
-  // }
-});
+    .catch(err => {
+      done(err)
+    })
+})
 
-// afterAll((done) => {
-//   queryInterface.bulkDelete('Lecturers')
-//   .then(() => {
-//     // console.log('All database restored')
-//     return done()
-//   })
-//   .catch(err => done(err))
-// })
+afterAll((done) => {
+  queryInterface.bulkDelete('Users')
+    .then(() => {
+      return queryInterface.bulkDelete('Videos')
+    })
+    .then(() => {
+      return queryInterface.bulkDelete('Lecturers')
+    })
+    .then(() => {
+      return queryInterface.bulkDelete('Subscriptions')
+    })
+    .then(() => {
+      console.log('All database restored by Lecturer Test')
+      return done()
+    })
+    .catch(err => done(err))
+})
 
 describe("testing /lecturers", () => {
   beforeAll(async (done) => {
@@ -76,24 +173,19 @@ describe("testing /lecturers", () => {
       done(err);
     }
   });
-  // afterAll((done) => {
-  //   Lecturer.destroy({ where: {} })
-  //   .then(() => done())
-  //   .catch(done)
-  // })
 
   /* ======================= CREATE LECTURERS ======================= */
 
   describe("success POST /lecturers", () => {
     it("should return response with status 201", async (done) => {
       const body = {
-        name: "Mobile Legends",
-        profile: "MOBA",
-        game: "mobile game",
-        role: "mistery",
-        team: "Hayabusa",
-        language: "english",
-        image: "image",
+        name: "Mario Brows",
+        profile: "MOBO",
+        game: "PC game",
+        role: "Lucky",
+        team: "Hadehhhh",
+        language: "Kachong",
+        image: "image.jpg",
       };
       request(app)
         .post("/lecturers")
@@ -105,7 +197,7 @@ describe("testing /lecturers", () => {
           }
           expect(res.statusCode).toEqual(201);
           done();
-        }, 5000);
+        });
     });
   });
 
@@ -119,7 +211,7 @@ describe("testing /lecturers", () => {
         team: "Hayabusa",
         language: "english",
         image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
-        ratings: [5, 4, 2],
+        ratings: 3,
       };
       request(app)
         .post("/lecturers")
@@ -131,22 +223,6 @@ describe("testing /lecturers", () => {
           } else {
             expect(res.status).toEqual(201);
             expect(typeof res.body).toEqual("object");
-            expect(res.body).toHaveProperty("id");
-            expect(res.body).toHaveProperty("name");
-            expect(res.body).toHaveProperty("profile");
-            expect(res.body).toHaveProperty("game");
-            expect(res.body).toHaveProperty("role");
-            expect(res.body).toHaveProperty("team");
-            expect(res.body).toHaveProperty("language");
-            expect(res.body).toHaveProperty("image");
-            expect(typeof res.body.id).toEqual("number");
-            expect(res.body.name).toEqual(body.name);
-            expect(res.body.profile).toEqual(body.profile);
-            expect(res.body.game).toEqual(body.game);
-            expect(res.body.role).toEqual(body.role);
-            expect(res.body.team).toEqual(body.team);
-            expect(res.body.language).toEqual(body.language);
-            expect(res.body.image).toEqual(body.image);
             done();
           }
         });
@@ -173,7 +249,6 @@ describe("testing /lecturers", () => {
           else {
             expect(res.statusCode).toEqual(400);
             expect(typeof res.body).toEqual("object");
-            // expect(res.body).toHaveProperty
             done();
           }
         });
@@ -234,7 +309,7 @@ describe("testing /lecturers", () => {
   describe("success PUT /lecturers", () => {
     it("should return response with status code 200", (done) => {
       const body = {
-        name: "Mobile Legends",
+        name: "Rudy Santoso",
         profile: "MOBA",
         game: "mobile game",
         role: "mistery",
@@ -250,7 +325,6 @@ describe("testing /lecturers", () => {
           if (err) done(err);
           else {
             expect(res.statusCode).toEqual(200);
-            // console.log(res.body);
             expect(typeof res.body).toEqual("object");
             done();
           }
@@ -422,9 +496,8 @@ describe("testing /lecturers", () => {
 
     it("should return success where status code 200 with redis", (done) => {
       request(app)
-        .get(`/lecturers/10`)
+        .get(`/lecturers/${lecturerId}`)
         .end((err, res) => {
-          console.log(err, "=========== ERR");
           if (err) done(err);
           else {
             expect(res.statusCode).toEqual(200);
@@ -536,14 +609,18 @@ describe("testing /lecturers", () => {
 
   describe("testing READ /Lecturers", () => {
     beforeAll((done) => {
-      const ratingData = {
-        rating: 3,
-        UserId: 2,
-        LecturerId: id,
-      };
-      Rating.create(ratingData).then(() => {
-        done();
-      });
+      redis.del("lecturersGame")
+        .then(() => {
+          const ratingData = {
+            rating: 3,
+            UserId: 2,
+            LecturerId: id,
+          };
+          Rating.create(ratingData).then(() => {
+            done();
+          });
+        })
+
     });
     it("should return success where status code 200", (done) => {
       request(app)
@@ -584,9 +661,26 @@ describe("testing /lecturers", () => {
   /* ======================= DELETE LECTURERS ======================= */
 
   describe("testing delete /lecturers", () => {
+    beforeAll(async () => {
+      await queryInterface.bulkInsert('Lecturers', [
+        {
+          id: 26,
+          name: "Rudy Santoso",
+          profile: "MOBA",
+          game: "Mobile Legends",
+          role: "Coach",
+          team: "Hayabusa",
+          language: "English",
+          image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      ], {})
+    })
+
     it("should return response with status 200", (done) => {
       request(app)
-        .delete(`/lecturers/${id}`)
+        .delete(`/lecturers/26`)
         .set("access_token", token)
         .end((err, res) => {
           if (err) done(err);
@@ -615,21 +709,23 @@ describe("testing /lecturers", () => {
 
   describe("testing READ /games from REDIS", () => {
     beforeAll((done) => {
+      let data = [
+        {
+          id: 3,
+          name: "League of Legends",
+          profile: "MMORPG",
+          game: "Mobile Legends",
+          role: "one",
+          team: "others team",
+          language: "English",
+          image: "www.google.co.id",
+          rating: 5,
+          videos: "www.video.com",
+        },
+      ]
+
       redis
-        .set("lecturersGame", [
-          {
-            id: 3,
-            name: "League of Legends",
-            profile: "MMORPG",
-            game: "Mobile",
-            role: "one",
-            team: "others team",
-            language: "English",
-            image: "www.google.co.id",
-            rating: 5,
-            videos: "www.video.com",
-          },
-        ])
+        .set("lecturersGame", JSON.stringify(data))
         .then(() => done());
     });
 
@@ -651,16 +747,28 @@ describe("testing /lecturers", () => {
   });
 
   describe("success GET /games", () => {
-    // beforeAll((done) => {
-    //   const ratingData = {
-    //     rating: 0,
-    //     UserId: 2,
-    //     LecturerId: id,
-    //   };
-    //   Rating.put(ratingData).then(() => {
-    //     done();
-    //   });
-    // });
+    beforeAll((done) => {
+      const ratingData = {
+        rating: 0,
+        UserId: 2,
+        LecturerId: id,
+      };
+      let newData = {
+        name: "Bambang",
+        profile: "Games",
+        game: "Mobile Legends",
+        role: "Ex Pro",
+        team: "Rudy",
+        language: "English",
+        image: "data/d872f5a0d69a4287bd9605b2ed5533e3"
+      }
+
+      Rating.create(ratingData)
+        .then(() => {
+          return Lecturer.create(newData)
+        })
+        .then(() => done())
+    });
 
     it("should return status code 200", (done) => {
       request(app)

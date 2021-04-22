@@ -1,12 +1,50 @@
 const request = require('supertest');
-const app = require('../app');
+const app = require('../app.js');
+const { hashPassword } = require('../helpers/bcrypt');
+const { sequelize } = require("../models");
+const { queryInterface } = sequelize;
+
+beforeAll(async (done) => {
+  await queryInterface.bulkInsert('Users', [
+    {
+      id: 1,
+      username: 'admin',
+      email: 'admin@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08922777773',
+      premium: false,
+      subscription_date: null,
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      username: 'customer',
+      email: 'customer@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08122339949',
+      premium: false,
+      subscription_date: null,
+      role: "",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+  done();
+})
+
+afterAll(async (done) => {
+  await queryInterface.bulkDelete('Users')
+  done();
+})
 
 describe('testing /login', () => {
   describe('success POST /login success', () => {
     it('should return response with status code 200', (done) => {
       const body = {
-        email: "email@mail.com",
-        password: "email"
+        email: "customer@mail.com",
+        password: "12345"
       }
       request(app)
         .post('/login')

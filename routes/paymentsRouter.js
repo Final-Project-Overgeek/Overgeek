@@ -8,5 +8,4 @@ router.post('/token', authenticate, PaymentController.createToken)
 router.post('/info', PaymentController.info)
 router.post('/creditcards', authenticate, PaymentController.creditcardPayments)
 
-
 module.exports = router
