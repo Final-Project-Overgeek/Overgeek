@@ -1,6 +1,6 @@
-const env = process.env.NODE_ENV
+const env = process.env.NODE_ENV;
 
-if (env === "development" || env === "test") require('dotenv').config();
+if (env === "development" || env === "test") require("dotenv").config();
 
 const capsEnv = env.toUpperCase();
 
@@ -11,26 +11,26 @@ const host = process.env["DB_HOST_" + capsEnv];
 const dialect = process.env["DB_DIALECT_" + capsEnv];
 
 module.exports = {
-  "development": {
+  development: {
     username,
     password,
     database,
     host,
-    dialect
+    dialect,
   },
-  "test": {
+  test: {
     logging: false,
     username,
     password,
     database,
     host,
-    dialect
+    dialect,
   },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  }
-}
+  production: {
+    username: "postgres",
+    password: "Madiun@123",
+    database: "Overgeek",
+    host: "127.0.0.1",
+    dialect: "postgres",
+  },
+};
