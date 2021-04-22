@@ -70,33 +70,33 @@ class PaymentController {
     }
   }
 
-  static test(req, res, next){
-    console.log(req.params.game)
-    if(req.body.settlement){
+  // static test(req, res, next){
+  //   console.log(req.params.game)
+  //   if(req.body.settlement){
 
-    }
-  }
+  //   }
+  // }
 
-  static check(req, res, next){
-    axios({
-      url: 'https://api.sandbox.midtrans.com/v2/asdas123sass2323s3dsffgg/status', //order_id
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization:
-        "Basic " +
-              Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
-            // Above is API server key for the Midtrans account, encoded to base64
-        },
-    })
-    .then(data => {
-      res.status(200).json(data.data)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
+  // static check(req, res, next){
+  //   axios({
+  //     url: 'https://api.sandbox.midtrans.com/v2/asdas123sass2323s3dsffgg/status', //order_id
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       Authorization:
+  //       "Basic " +
+  //             Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
+  //           // Above is API server key for the Midtrans account, encoded to base64
+  //       },
+  //   })
+  //   .then(data => {
+  //     res.status(200).json(data.data)
+  //   })
+  //   .catch(err => {
+  //     console.log(err)
+  //   })
+  // }
   static info = async (req, res, next) => {
     console.log('Masuk static INFO')
     try {
@@ -151,42 +151,42 @@ class PaymentController {
   }
 
 
-  static checkExists(req, res, next){ 
-    let id = Number(req.decoded.id)
-    let order_id = ''
-    Payment.findAll({where: {
-      UserId: id
-    }})
-    .then(data => {
-      if(data) { 
-        console.log(data[19].dataValues.token)
-        order_id = data[19].dataValues.token
-        return axios({
-          url: `https://api.sandbox.midtrans.com/v2/${data[(data.length - 1)].dataValues.token}/status`,
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization:
-            "Basic " +
-                  Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
+  // static checkExists(req, res, next){ 
+  //   let id = Number(req.decoded.id)
+  //   let order_id = ''
+  //   Payment.findAll({where: {
+  //     UserId: id
+  //   }})
+  //   .then(data => {
+  //     if(data) { 
+  //       console.log(data[19].dataValues.token)
+  //       order_id = data[19].dataValues.token
+  //       return axios({
+  //         url: `https://api.sandbox.midtrans.com/v2/${data[(data.length - 1)].dataValues.token}/status`,
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Accept: "application/json",
+  //           Authorization:
+  //           "Basic " +
+  //                 Buffer.from("SB-Mid-server-h9MIi9qG8Vde4JzmQdADfN0Q").toString("base64")
                
-            },
-        })
-      }
-      else {
-        console.log('tidak ada tagihan')
-      }
-    })
-    .then(data => {
-      console.log('asdasd',data.data)
-      if(data.data.transaction_status === 'settlement'){
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
+  //           },
+  //       })
+  //     }
+  //     else {
+  //       console.log('tidak ada tagihan')
+  //     }
+  //   })
+  //   .then(data => {
+  //     console.log('asdasd',data.data)
+  //     if(data.data.transaction_status === 'settlement'){
+  //     }
+  //   })
+  //   .catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   static creditcardPayments = async(req, res, next) => {
     try {

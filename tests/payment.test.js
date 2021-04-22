@@ -6,50 +6,153 @@ const { generateToken } = require("../helpers/jwt.js");
 const { sequelize } = require("../models");
 const { queryInterface } = sequelize;
 const { randomId } = require("../helpers/randomId");
-let userLogin = {
-  email: "user@mail.com",
-  password: "12345",
-};
-let access_token = "";
 let invalidAccessToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAyLCJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2MTg5MjkwNzJ9.kb6VPt5xrbwUdQg4GhSRxvx4y1L8zPmjPB5_HVKsjQ";
 const axios = require("axios");
 
 jest.mock("axios");
 
-beforeAll((done) => {
-  queryInterface.bulkInsert("Users", [
+let userLogin = {
+  email: 'customer@mail.com',
+  password: '12345'
+};
+let access_token = '';
+
+beforeAll(async (done) => {
+  await queryInterface.bulkInsert('Users', [
     {
-      username: "user",
-      email: "user@mail.com",
-      password: hashPassword("12345"),
-      phone_number: "08122238849",
+      id: 1,
+      username: 'admin',
+      email: 'admin@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08922777773',
       premium: false,
       subscription_date: null,
-      role: "customer",
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      username: 'customer',
+      email: 'customer@mail.com',
+      password: hashPassword('12345'),
+      phone_number: '08122339949',
+      premium: false,
+      subscription_date: null,
+      role: "",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Lecturers', [
+    {
+      id: 1,
+      name: "Rudy Santoso",
+      profile: "MOBA",
+      game: "Mobile Legends",
+      role: "Coach",
+      team: "Hayabusa",
+      language: "English",
+      image: "data/d872f5a0d69a4287bd9605b2ed5533e3",
       createdAt: new Date(),
       updatedAt: new Date(),
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Videos', [
+    {
+      id: 1,
+      title: "Ban & Picks Guide",
+      url: "/upload/data/e3355f2b46ba90f13779db58fa8d5120",
+      thumbnail: "https://imgur.com/a/Wjpk2BU",
+      isFree: false,
+      LecturerId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
-  ]);
+    {
+      id: 2,
+      title: "Knowing Your Role",
+      url: "/upload/data/05bde798a27c0951cf535e2e55ee2bbf",
+      thumbnail: "https://imgur.com/a/0CWNUuH",
+      isFree: true,
+      LecturerId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+  await queryInterface.bulkInsert('Subscriptions', [
+    {
+      id: 1,
+      name: "monthly",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834423000647860255/MONTHLY_free-file.png",
+      price: 50000,
+      days: 30,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      name: "season",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834422485235662848/SEASON_free-file.png",
+      price: 250000,
+      days: 180,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 3,
+      name: "annual",
+      image: "https://cdn.discordapp.com/attachments/832204439967236108/834422727431290941/ANNUAL_free-file.png",
+      price: 400000,
+      days: 360,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ], {})
+
+
+
   User.findOne({ where: { email: userLogin.email } })
-    .then((data) => {
+    .then(data => {
       if (data) {
-        let cekPass = comparePassword(userLogin.password, data.password);
-        let payload = { id: data.id, email: data.email };
+        let cekPass = comparePassword(userLogin.password, data.password)
+        let payload = { id: data.id, email: data.email }
         if (cekPass) {
           access_token = generateToken(payload);
-          done();
+          done()
         } else {
-          throw new Error("Invalid email/password");
+          throw new Error('Invalid email/password');
         }
       } else {
-        throw new Error("Invalid email/password");
+        throw new Error('Invalid email/password');
       }
     })
-    .catch((err) => {
-      done(err);
-    });
-});
+    .catch(err => {
+      done(err)
+    })
+})
+
+afterAll((done) => {
+  queryInterface.bulkDelete('Users')
+    .then(() => {
+      return queryInterface.bulkDelete('Videos')
+    })
+    .then(() => {
+      return queryInterface.bulkDelete('Lecturers')
+    })
+    .then(() => {
+      return queryInterface.bulkDelete('Subscriptions')
+    })
+    .then(() => {
+      console.log('All database restored')
+      return done()
+    })
+    .catch(err => done(err))
+})
 
 describe("FOR TESTING ROUTE /payments/...", () => {
   describe("testing POST create token payments/token SUCCESS", () => {

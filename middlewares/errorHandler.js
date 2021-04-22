@@ -19,10 +19,8 @@ const errorHandler = function (err, req, res, next) {
   else if (err.name === `JsonWebTokenError`) {
     res.status(401).json({ message: `Invalid Token!` });
   } else {
-    console.log(err)
     res.status(500).json({ message: "Internal Server Error" })
   }
-  console.log(err.message, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 }
 
 module.exports = errorHandler

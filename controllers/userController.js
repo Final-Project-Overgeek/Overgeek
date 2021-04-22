@@ -9,7 +9,7 @@ class UserController {
     try {
       await redis.del("users");
 
-      const userData = {
+      let userData = {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
@@ -18,6 +18,19 @@ class UserController {
         subscription_date: null,
         role: "customer",
       };
+      // if (!req.body.role) {
+      // } else {
+      //   userData = {
+      //     username: req.body.username,
+      //     email: req.body.email,
+      //     password: req.body.password,
+      //     phone_number: req.body.phone_number,
+      //     premium: false,
+      //     subscription_date: null,
+      //     role: "admin",
+      //   };
+      // }
+
 
       const user = await User.create(userData);
 
@@ -94,7 +107,7 @@ class UserController {
         role: user.role,
       });
       await redis.set('userRedis', JSON.stringify(user))
-      res.status(200).json({access_token});
+      res.status(200).json({ access_token });
     } catch (err) {
       next(err);
     }
@@ -118,9 +131,13 @@ class UserController {
           subsType = subscriptionDatas[i].price;
         }
       }
+
       await Subscription.findOne({
-        where: {
-          name: price,
+        // where: {
+        //   name: price,
+        // }, ======================================> BEFORE , gak ada "name: price" ...????
+        where: { // ===============================>> AFTER
+          price: subsType,
         },
       });
 
