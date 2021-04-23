@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Ban & Picks Guide",
+    "url": "https://drive.google.com/file/d/1bYAEzTIgFvBCPqL0nHSkmBhrWjL7Ybiq/preview",
+    "thumbnail": "https://cdn.discordapp.com/attachments/832204439967236108/833892058519437312/unknown.png",
+    "isFree": false,
+    "LecturerId": 3
+  },
+  {
+    "id": 2,
+    "title": "Knowing Your Role",
+    "url": "https://drive.google.com/file/d/1WDRymTBxrpQqa06G0ez_eR6w2yIAwOy9/preview",
+    "thumbnail": "https://cdn.discordapp.com/attachments/832204439967236108/833888102200115241/unknown.png",
+    "isFree": true,
+    "LecturerId": 3
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "monthly",
+    "image": "https://cdn.discordapp.com/attachments/832204439967236108/834423000647860255/MONTHLY_free-file.png",
+    "price": 50000,
+    "days": 30
+  },
+  {
+    "id": 2,
+    "name": "season",
+    "image": "https://cdn.discordapp.com/attachments/832204439967236108/834422485235662848/SEASON_free-file.png",
+    "price": 250000,
+    "days": 180
+  },
+  {
+    "id": 3,
+    "name": "annual",
+    "image": "https://cdn.discordapp.com/attachments/832204439967236108/834422727431290941/ANNUAL_free-file.png",
+    "price": 400000,
+    "days": 360
+  }
+]
